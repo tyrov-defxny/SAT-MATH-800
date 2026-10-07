@@ -1,0 +1,2766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>defxny — SAT Math 800</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&family=UnifrakturMaguntia&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f5f0;
+    --gray-1: #1a1a1a;
+    --gray-2: #2a2a2a;
+    --gray-3: #888;
+    --gray-4: #ccc;
+    --bg: #0a0a0a;
+    --surface: #111;
+    --surface2: #1a1a1a;
+    --border: #222;
+    --border2: #1a1a1a;
+    --text: #f5f5f0;
+    --text2: #ccc;
+    --text3: #888;
+    --mono: 'DM Mono', monospace;
+    --serif: 'Playfair Display', serif;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  body.light {
+    --bg: #f5f5f0;
+    --surface: #ffffff;
+    --surface2: #f0ede8;
+    --border: #ddd;
+    --border2: #e8e5e0;
+    --text: #0a0a0a;
+    --text2: #333;
+    --text3: #666;
+    --black: #f5f5f0;
+    --white: #0a0a0a;
+    --gray-1: #f0ede8;
+    --gray-2: #e0ddd8;
+    --gray-3: #666;
+    --gray-4: #333;
+  }
+
+  .theme-toggle {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--text3); cursor: pointer; font-size: 16px;
+    width: 34px; height: 34px; display: flex; align-items: center;
+    justify-content: center; transition: all 0.2s; flex-shrink: 0;
+    border-radius: 4px;
+  }
+  .theme-toggle:hover { border-color: var(--text3); color: var(--text); }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-weight: 300;
+    min-height: 100vh;
+    transition: background 0.25s, color 0.25s;
+  }
+
+  /* ═══ NAV ═══ */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center;
+    padding: 16px 48px;
+    border-bottom: 1px solid var(--border);
+    background: var(--nav-bg, rgba(10,10,10,0.95));
+    backdrop-filter: blur(12px);
+  }
+  body.light nav { --nav-bg: rgba(245,245,240,0.95); }
+
+  .nav-logo {
+    text-decoration: none;
+    display: flex; align-items: center;
+    flex-shrink: 0;
+    position: relative;
+    height: 32px;
+    width: 24px;
+    transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+    overflow: hidden;
+  }
+  .nav-logo:hover { width: 60px; }
+
+  .logo-svg-wrap {
+    position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+    width: 22px; height: 28px;
+    opacity: 1;
+    transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .logo-img {
+    width: 22px; height: 28px;
+    object-fit: contain;
+    position: absolute; left: 0; top: 0;
+    transition: opacity 0.2s ease;
+  }
+  /* Dark mode: show white D */
+  .logo-dark { opacity: 1; }
+  .logo-light { opacity: 0; }
+  /* Light mode: show black D */
+  body.light .logo-dark { opacity: 0; }
+  body.light .logo-light { opacity: 1; }
+
+  .logo-word {
+    position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+    font-family: var(--mono); font-size: 13px; font-weight: 500;
+    letter-spacing: 0.1em; color: var(--text);
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s ease 0.08s;
+    pointer-events: none;
+  }
+
+  .nav-logo:hover .logo-svg-wrap {
+    opacity: 0;
+    transform: translateY(-50%) scale(0.5);
+    pointer-events: none;
+  }
+  .nav-logo:hover .logo-word {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Nav links centered, theme toggle pinned right */
+  .nav-links {
+    display: flex; gap: 32px;
+    position: absolute; left: 50%; transform: translateX(-50%);
+  }
+  .nav-links a {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--text3); text-decoration: none;
+    transition: color 0.2s; cursor: pointer;
+  }
+  .nav-links a:hover, .nav-links a.active { color: var(--text); }
+  .theme-toggle { margin-left: auto; }
+
+  /* ═══ PAGES ═══ */
+  .page { display: none; padding-top: 80px; min-height: 100vh; }
+  .page.active { display: block; }
+
+  /* ═══ HOME ═══ */
+  #home {
+    display: none;
+    align-items: center; justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    min-height: 100vh;
+    padding: 80px 48px 48px;
+    position: relative; overflow: hidden;
+  }
+  #home.active { display: flex; }
+
+  .home-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 64px 64px;
+    pointer-events: none;
+  }
+
+  .home-tag {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--text3);
+    border: 1px solid var(--border); padding: 6px 16px;
+    margin-bottom: 48px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .home-title {
+    font-family: var(--serif);
+    font-size: clamp(56px, 8vw, 112px);
+    font-weight: 900; line-height: 0.95;
+    letter-spacing: -0.02em;
+    margin-bottom: 32px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+  .home-title em { font-style: italic; color: var(--text2); }
+
+  .home-sub {
+    font-family: var(--sans); font-size: 16px; font-weight: 300;
+    color: var(--text3); max-width: 520px; width: 100%; line-height: 1.7;
+    margin-bottom: 64px;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+
+  .home-stats {
+    display: flex; gap: 64px; margin-bottom: 64px;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: var(--serif); font-size: 48px; font-weight: 700;
+    display: block; line-height: 1;
+  }
+  .stat-label {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--text3); margin-top: 8px;
+    display: block;
+  }
+
+  .home-divider {
+    width: 1px; height: 40px; background: #333;
+    margin: 0 -32px;
+  }
+
+  .btn-primary {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em;
+    text-transform: uppercase; padding: 16px 40px;
+    background: var(--white); color: var(--black);
+    border: none; cursor: pointer;
+    transition: all 0.2s;
+    animation: fadeUp 0.6s 0.4s ease both;
+  }
+  .btn-primary:hover { background: var(--gray-4); transform: translateY(-2px); }
+
+  .home-aim {
+    font-family: var(--mono); font-size: 11px; color: var(--text3);
+    letter-spacing: 0.1em; text-align: center;
+    margin-top: 40px;
+    animation: fadeUp 0.6s 0.5s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ═══ BANK GRID ═══ */
+  .bank-header {
+    padding: 48px 64px 28px;
+    border-bottom: 1px solid var(--border2);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .bank-header-left { display: flex; flex-direction: column; gap: 6px; }
+  .bank-title { font-family: var(--serif); font-size: 36px; font-weight: 700; }
+  .bank-meta { font-family: var(--mono); font-size: 11px; color: var(--text3); letter-spacing: 0.1em; }
+
+  .bank-legend {
+    display: flex; gap: 20px; align-items: center; flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 7px;
+    font-family: var(--mono); font-size: 11px; color: var(--text3);
+    letter-spacing: 0.08em;
+  }
+  .legend-item.sm { font-size: 10px; }
+  .legend-dot {
+    width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0;
+  }
+  .legend-dot.unanswered { background: var(--surface2); border: 1px solid #444; }
+  .legend-dot.correct { background: rgba(34,197,94,0.25); border: 1px solid #22c55e; }
+  .legend-dot.wrong { background: rgba(239,68,68,0.2); border: 1px solid #ef4444; }
+
+  .bank-grid {
+    padding: 32px 64px 80px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+    gap: 8px;
+  }
+
+  .bank-box {
+    aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 12px; font-weight: 500;
+    border-radius: 6px; cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--surface); color: var(--text3);
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .bank-box:hover { border-color: #666; color: var(--text); transform: translateY(-1px); }
+  .bank-box.correct {
+    background: rgba(34,197,94,0.1);
+    border-color: #22c55e55;
+    color: #86efac;
+  }
+  .bank-box.wrong {
+    background: rgba(239,68,68,0.08);
+    border-color: #ef444455;
+    color: #fca5a5;
+  }
+  .bank-box.current {
+    border-color: var(--text);
+    color: var(--text);
+    box-shadow: 0 0 0 1px var(--white);
+  }
+
+  /* ═══ QUESTION PAGE ═══ */
+  #qpage { min-height: 100vh; }
+
+  .qp-topbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px; height: 64px;
+    background: var(--nav-bg, rgba(10,10,10,0.97));
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    gap: 16px;
+  }
+  .qp-back {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em;
+    color: var(--text3); background: transparent; border: none;
+    cursor: pointer; transition: color 0.2s; white-space: nowrap;
+  }
+  .qp-back:hover { color: var(--text); }
+
+  .qp-center {
+    display: flex; align-items: center; gap: 20px;
+  }
+  .qp-num {
+    font-family: var(--mono); font-size: 13px; color: var(--text3);
+    letter-spacing: 0.08em;
+  }
+  .qp-timer {
+    font-family: var(--mono); font-size: 22px; font-weight: 500;
+    color: var(--text); letter-spacing: 0.05em; min-width: 60px;
+    text-align: center;
+  }
+
+  .qp-panel-toggle {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em;
+    text-transform: uppercase; padding: 8px 18px;
+    background: transparent; color: var(--text3);
+    border: 1px solid var(--border); cursor: pointer; transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .qp-panel-toggle:hover { border-color: var(--text3); color: var(--text); }
+
+  .qp-body {
+    max-width: 760px; margin: 0 auto;
+    padding: 96px 48px 80px;
+  }
+
+  .qp-question { }
+  .qp-q-text {
+    font-size: 17px; line-height: 1.85; color: var(--text);
+    margin-bottom: 36px; font-weight: 300;
+  }
+  .qp-choices { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
+  .qp-choice-btn {
+    display: flex; align-items: flex-start; gap: 20px;
+    padding: 16px 22px;
+    background: transparent; border: 1px solid var(--border);
+    cursor: pointer; text-align: left; width: 100%;
+    font-family: var(--sans); font-size: 15px; color: var(--text);
+    font-weight: 300; transition: all 0.15s; border-radius: 4px;
+  }
+  .qp-choice-btn:hover:not(:disabled) {
+    border-color: #555; background: rgba(255,255,255,0.03);
+  }
+  .qp-choice-letter {
+    font-family: var(--mono); font-size: 13px; color: var(--text3);
+    min-width: 18px; margin-top: 1px; flex-shrink: 0;
+  }
+  .qp-choice-btn.correct-ans {
+    border-color: #22c55e !important;
+    background: rgba(34,197,94,0.1) !important;
+    color: #86efac !important;
+  }
+  .qp-choice-btn.correct-ans .qp-choice-letter { color: #86efac !important; }
+  .qp-choice-btn.wrong-ans {
+    border-color: #ef4444 !important;
+    background: rgba(239,68,68,0.07) !important;
+    color: #fca5a5 !important;
+    text-decoration: line-through; opacity: 0.7;
+  }
+  .qp-choice-btn.wrong-ans .qp-choice-letter { color: #fca5a5 !important; }
+  .qp-choice-btn:disabled { cursor: default; }
+
+  .qp-free-wrap { margin-bottom: 32px; }
+  .qp-free-input {
+    font-family: var(--mono); font-size: 16px;
+    background: transparent; border: none; border-bottom: 2px solid #444;
+    color: var(--text); padding: 12px 0; width: 100%; max-width: 340px;
+    outline: none; transition: border-color 0.2s; display: block;
+    margin-bottom: 16px;
+  }
+  .qp-free-input:focus { border-color: var(--text); }
+  .qp-free-input.correct { border-color: #22c55e; color: #86efac; }
+  .qp-free-input.wrong { border-color: #ef4444; color: #fca5a5; }
+  .qp-free-input:disabled { cursor: default; }
+  .qp-submit-btn {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em;
+    text-transform: uppercase; padding: 12px 28px;
+    background: transparent; color: var(--text3);
+    border: 1px solid var(--border); cursor: pointer; transition: all 0.2s;
+  }
+  .qp-submit-btn:hover:not(:disabled) { border-color: var(--text3); color: var(--text); }
+  .qp-submit-btn:disabled { opacity: 0.4; cursor: default; }
+
+  .qp-feedback {
+    font-family: var(--mono); font-size: 13px;
+    padding: 14px 18px; margin-top: 8px; display: none;
+    border-left: 3px solid transparent; border-radius: 0 4px 4px 0;
+  }
+  .qp-feedback.correct {
+    display: block; border-left-color: #22c55e;
+    background: rgba(34,197,94,0.08); color: #86efac;
+  }
+  .qp-feedback.wrong {
+    display: block; border-left-color: #ef4444;
+    background: rgba(239,68,68,0.07); color: #fca5a5;
+  }
+  .qp-show-answer-btn {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em;
+    text-transform: uppercase; padding: 9px 20px; margin-top: 10px;
+    background: transparent; color: #ef4444;
+    border: 1px solid #ef444455; cursor: pointer; transition: all 0.2s;
+    display: inline-block;
+  }
+  .qp-show-answer-btn:hover { background: rgba(239,68,68,0.1); border-color: #ef4444; }
+  .qp-answer-reveal {
+    display: none; font-family: var(--mono); font-size: 13px;
+    padding: 14px 18px; margin-top: 8px;
+    border-left: 3px solid #22c55e;
+    background: rgba(34,197,94,0.08); color: #86efac;
+  }
+  .qp-answer-reveal.visible { display: block; }
+
+  .qp-actions {
+    display: flex; align-items: center; gap: 12px;
+    margin-top: 40px; padding-top: 32px; border-top: 1px solid #1e1e1e;
+  }
+  .qp-prev {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em;
+    text-transform: uppercase; padding: 14px 28px;
+    background: transparent; color: var(--text3);
+    border: 1px solid var(--border); cursor: pointer; transition: all 0.2s;
+  }
+  .qp-prev:hover:not(:disabled) { border-color: var(--text3); color: var(--text); }
+  .qp-prev:disabled { opacity: 0.25; cursor: default; }
+  .qp-next {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em;
+    text-transform: uppercase; padding: 14px 36px;
+    background: var(--white); color: var(--black);
+    border: none; cursor: pointer; transition: all 0.2s;
+  }
+  .qp-next:hover:not(:disabled) { background: var(--gray-4); transform: translateY(-1px); }
+  .qp-next:disabled { opacity: 0.25; cursor: default; }
+  .qp-progress-info {
+    font-family: var(--mono); font-size: 11px; color: var(--text3);
+    letter-spacing: 0.08em; flex: 1; text-align: center;
+  }
+
+  /* ═══ MINI PANEL ═══ */
+  .qp-mini-panel {
+    position: fixed; top: 64px; right: 0;
+    width: 300px; max-height: calc(100vh - 64px);
+    background: var(--surface); border-left: 1px solid #222;
+    display: flex; flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+    z-index: 150; overflow: hidden;
+  }
+  .qp-mini-panel.open { transform: translateX(0); }
+
+  .qp-mini-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 20px; border-bottom: 1px solid var(--border2); flex-shrink: 0;
+  }
+  .qp-mini-title {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--text3);
+  }
+  .qp-mini-close {
+    background: transparent; border: none; color: var(--text3);
+    cursor: pointer; font-size: 14px; line-height: 1;
+    transition: color 0.2s;
+  }
+  .qp-mini-close:hover { color: var(--text); }
+  .qp-mini-legend {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    padding: 12px 20px; border-bottom: 1px solid var(--border2); flex-shrink: 0;
+  }
+  .qp-mini-grid {
+    padding: 16px 20px;
+    display: grid; grid-template-columns: repeat(6, 1fr);
+    gap: 8px; overflow-y: auto;
+  }
+  .mini-box {
+    aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 12px;
+    border-radius: 6px; cursor: pointer;
+    border: 1px solid var(--border); background: var(--surface2); color: var(--text3);
+    transition: all 0.12s; user-select: none;
+  }
+  .mini-box:hover { border-color: var(--text3); color: var(--text); }
+  .mini-box.correct { background: rgba(34,197,94,0.12); border-color: #22c55e; color: #86efac; }
+  .mini-box.wrong { background: rgba(239,68,68,0.1); border-color: #ef4444; color: #fca5a5; }
+  .mini-box.current { border-color: var(--text); color: var(--text); box-shadow: 0 0 0 1px var(--white); }
+
+  /* ═══ RESPONSIVE — qpage ═══ */
+  @media (max-width: 768px) {
+    .qp-topbar { padding: 0 20px; }
+    .qp-back { font-size: 11px; }
+    .qp-timer { font-size: 18px; }
+    .qp-panel-toggle { font-size: 10px; padding: 7px 12px; }
+    .qp-body { padding: 84px 20px 80px; }
+    .qp-q-text { font-size: 15px; margin-bottom: 24px; }
+    .qp-choice-btn { font-size: 14px; padding: 14px 16px; gap: 14px; }
+    .bank-grid { padding: 20px 20px 60px; gap: 7px; grid-template-columns: repeat(auto-fill, minmax(40px,1fr)); }
+    .bank-header { padding: 28px 20px 20px; }
+    .bank-title { font-size: 26px; }
+    .qp-mini-panel { width: 260px; }
+    .qp-mini-grid { grid-template-columns: repeat(5,1fr); }
+  }
+  @media (max-width: 480px) {
+    .qp-topbar { padding: 0 14px; height: 56px; }
+    .qp-timer { font-size: 16px; }
+    .qp-back { font-size: 10px; }
+    .qp-panel-toggle { font-size: 9px; padding: 6px 10px; }
+    .qp-body { padding: 72px 16px 80px; }
+    .qp-q-text { font-size: 14px; }
+    .qp-free-input { max-width: 100%; }
+    .bank-grid { padding: 14px 14px 60px; gap: 6px; grid-template-columns: repeat(auto-fill, minmax(36px,1fr)); }
+    .bank-box { font-size: 11px; border-radius: 4px; }
+    .bank-header { padding: 18px 14px 12px; flex-direction: column; align-items: flex-start; }
+    .bank-title { font-size: 22px; }
+    .qp-mini-panel { width: 100%; border-left: none; border-top: 1px solid #222; top: auto; bottom: 0; max-height: 55vh; transform: translateY(100%); }
+    .qp-mini-panel.open { transform: translateY(0); }
+    .qp-mini-grid { grid-template-columns: repeat(6,1fr); }
+  }
+
+  .q-text {
+    font-size: 15px; line-height: 1.8; color: var(--text);
+    margin-bottom: 28px;
+    font-weight: 300;
+  }
+
+  /* MC choices */
+  .q-choices { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+  .choice-btn {
+    display: flex; align-items: flex-start; gap: 16px;
+    padding: 14px 20px; background: transparent;
+    border: 1px solid var(--border); cursor: pointer;
+    text-align: left; transition: all 0.15s; width: 100%;
+    font-family: var(--sans); font-size: 14px; color: var(--text);
+    font-weight: 300;
+  }
+  .choice-btn:hover:not(:disabled) { border-color: #555; background: rgba(255,255,255,0.03); }
+  .choice-letter {
+    font-family: var(--mono); font-size: 12px; color: var(--text3);
+    min-width: 16px; margin-top: 1px;
+  }
+  .choice-btn.selected { border-color: var(--text3); background: rgba(255,255,255,0.05); }
+  .choice-btn.correct-ans {
+    border-color: #22c55e !important;
+    background: rgba(34,197,94,0.12) !important;
+    color: #86efac !important;
+  }
+  .choice-btn.correct-ans .choice-letter { color: #86efac !important; }
+  .choice-btn.wrong-ans {
+    border-color: #ef4444 !important;
+    background: rgba(239,68,68,0.08) !important;
+    color: #fca5a5 !important;
+    text-decoration: line-through;
+    opacity: 0.7;
+  }
+  .choice-btn.wrong-ans .choice-letter { color: #fca5a5 !important; }
+  .choice-btn:disabled { cursor: default; }
+
+  /* Free input */
+  .q-free-input {
+    display: flex; gap: 12px; align-items: center; margin-bottom: 16px; flex-wrap: wrap;
+  }
+  .free-answer-input {
+    font-family: var(--mono); font-size: 14px;
+    background: transparent; border: none; border-bottom: 2px solid #444;
+    color: var(--text); padding: 10px 0; width: 260px; outline: none;
+    transition: border-color 0.2s;
+  }
+  .free-answer-input:focus { border-color: var(--text); }
+  .free-answer-input.correct {
+    border-color: #22c55e;
+    color: #86efac;
+  }
+  .free-answer-input.wrong {
+    border-color: #ef4444;
+    color: #fca5a5;
+  }
+  .free-answer-input:disabled { cursor: default; }
+
+  .submit-btn {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em;
+    text-transform: uppercase; padding: 10px 24px;
+    background: transparent; color: var(--text3);
+    border: 1px solid var(--border); cursor: pointer; transition: all 0.2s;
+  }
+  .submit-btn:hover:not(:disabled) { border-color: var(--text3); color: var(--text); }
+  .submit-btn:disabled { opacity: 0.4; cursor: default; }
+
+  .q-feedback {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em;
+    padding: 12px 16px; margin-top: 8px; display: none;
+    border-left: 3px solid transparent;
+  }
+  .q-feedback.correct {
+    display: block;
+    border-left-color: #22c55e;
+    background: rgba(34,197,94,0.08);
+    color: #86efac;
+  }
+  .q-feedback.wrong {
+    display: block;
+    border-left-color: #ef4444;
+    background: rgba(239,68,68,0.08);
+    color: #fca5a5;
+  }
+
+  .show-answer-btn {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em;
+    text-transform: uppercase; padding: 8px 20px;
+    background: transparent; color: #ef4444;
+    border: 1px solid #ef444466; cursor: pointer;
+    transition: all 0.2s; margin-top: 10px; display: inline-block;
+  }
+  .show-answer-btn:hover {
+    background: rgba(239,68,68,0.1);
+    border-color: #ef4444;
+  }
+
+  .answer-reveal {
+    display: none;
+    font-family: var(--mono); font-size: 13px;
+    padding: 12px 16px; margin-top: 8px;
+    border-left: 3px solid #22c55e;
+    background: rgba(34,197,94,0.08);
+    color: #86efac;
+  }
+  .answer-reveal.visible { display: block; }
+
+  .score-panel {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--gray-1); border-top: 1px solid #333;
+    padding: 16px 64px;
+    display: flex; align-items: center; gap: 32px;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em;
+    transform: translateY(100%); transition: transform 0.4s ease;
+    z-index: 50;
+  }
+  .score-panel.visible { transform: translateY(0); }
+  .score-panel span { color: var(--text3); }
+  .score-panel strong { color: var(--text); font-weight: 500; }
+  .score-panel strong.green { color: #22c55e; }
+  .score-panel strong.red { color: #ef4444; }
+  .score-label { text-transform: uppercase; letter-spacing: 0.12em; }
+
+  /* ═══ FORMULA PAGE ═══ */
+  #formulas { padding: 80px 0 80px; }
+  .formulas-header {
+    padding: 48px 64px 28px;
+    border-bottom: 1px solid var(--border2);
+    display: flex; align-items: baseline; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .formulas-title { font-family: var(--serif); font-size: 36px; font-weight: 700; }
+  .formulas-sub { font-family: var(--mono); font-size: 11px; color: var(--text3); letter-spacing: 0.1em; }
+  .formulas-grid {
+    padding: 32px 64px 80px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+    gap: 8px;
+  }
+  .formula-box {
+    aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 12px; font-weight: 500;
+    border-radius: 6px; cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--surface); color: var(--text3);
+    transition: all 0.15s; user-select: none;
+  }
+  .formula-box:hover { border-color: #666; color: var(--text); transform: translateY(-1px); }
+
+  /* Formula modal */
+  .formula-modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 300;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .formula-modal-overlay.open { display: flex; }
+  .formula-modal {
+    background: var(--surface); border: 1px solid var(--border);
+    max-width: 520px; width: 100%;
+    padding: 36px 40px; position: relative;
+    max-height: 80vh; overflow-y: auto;
+  }
+  .formula-modal-close {
+    position: absolute; top: 16px; right: 20px;
+    background: transparent; border: none; color: var(--text3);
+    font-size: 18px; cursor: pointer; transition: color 0.2s; line-height: 1;
+  }
+  .formula-modal-close:hover { color: var(--text); }
+  .formula-modal-num {
+    font-family: var(--mono); font-size: 11px; color: var(--text3);
+    letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 16px;
+  }
+  .formula-modal-title {
+    font-family: var(--serif); font-size: 22px; font-weight: 700;
+    margin-bottom: 20px; line-height: 1.3;
+  }
+  .formula-modal-body {
+    font-family: var(--mono); font-size: 13px; color: var(--text2);
+    line-height: 1.9; white-space: pre-line;
+  }
+  .formula-modal-formula {
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 16px 20px; margin: 16px 0;
+    font-family: var(--mono); font-size: 14px; color: var(--text);
+    line-height: 1.7;
+  }
+
+  @media (max-width: 768px) {
+    .formulas-header { padding: 28px 20px 20px; }
+    .formulas-grid { padding: 20px 20px 60px; }
+    .formula-modal { padding: 28px 24px; }
+  }
+  @media (max-width: 480px) {
+    .formulas-header { padding: 20px 14px 14px; }
+    .formulas-title { font-size: 22px; }
+    .formulas-grid { padding: 14px 14px 60px; }
+  }
+  /* ═══ LOGIN PAGE ═══ */
+  #login {
+    display: none;
+    min-height: 100vh;
+    align-items: center; justify-content: center;
+    padding: 100px 24px 60px;
+  }
+  .login-box {
+    width: 100%; max-width: 360px;
+  }
+  .login-title {
+    font-family: var(--serif); font-size: 32px; font-weight: 700;
+    margin-bottom: 8px; text-align: center;
+  }
+  .login-sub {
+    font-family: var(--mono); font-size: 12px; color: var(--text3);
+    text-align: center; margin-bottom: 36px; letter-spacing: 0.05em;
+  }
+  .login-field { margin-bottom: 20px; }
+  .login-label {
+    display: block; font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--text3);
+    margin-bottom: 8px;
+  }
+  .login-input {
+    width: 100%; font-family: var(--sans); font-size: 15px;
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text); padding: 12px 16px; outline: none;
+    transition: border-color 0.2s;
+  }
+  .login-input:focus { border-color: var(--text3); }
+  .login-btn {
+    width: 100%; font-family: var(--mono); font-size: 12px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 14px; background: var(--text); color: var(--bg);
+    border: none; cursor: pointer; transition: all 0.2s;
+    margin-top: 8px;
+  }
+  .login-btn:hover:not(:disabled) { opacity: 0.85; }
+  .login-btn:disabled { opacity: 0.5; cursor: default; }
+  .login-switch {
+    text-align: center; margin-top: 20px;
+    font-family: var(--mono); font-size: 12px; color: var(--text3);
+  }
+  .login-switch a {
+    color: var(--text); cursor: pointer; text-decoration: underline;
+  }
+  .login-error {
+    font-family: var(--mono); font-size: 12px; color: #ef4444;
+    margin-top: 12px; text-align: center; display: none;
+  }
+  .login-error.show { display: block; }
+  .login-guest {
+    text-align: center; margin-top: 28px; padding-top: 20px;
+    border-top: 1px solid var(--border2);
+  }
+  .login-guest a {
+    font-family: var(--mono); font-size: 11px; color: var(--text3);
+    cursor: pointer; text-decoration: underline;
+  }
+  .user-badge {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--mono); font-size: 11px; color: var(--text3);
+  }
+  .user-badge .user-name { color: var(--text); font-weight: 500; }
+  .logout-btn {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--text3); font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 5px 10px; cursor: pointer; transition: all 0.2s;
+  }
+  .logout-btn:hover { border-color: var(--text3); color: var(--text); }
+
+  /* ═══ LEADERBOARD PAGE ═══ */
+  #leaderboard { padding: 80px 0 80px; }
+  .lb-header {
+    padding: 48px 64px 28px;
+    border-bottom: 1px solid var(--border2);
+  }
+  .lb-title { font-family: var(--serif); font-size: 36px; font-weight: 700; }
+  .lb-sub {
+    font-family: var(--mono); font-size: 11px; color: var(--text3);
+    letter-spacing: 0.1em; margin-top: 6px; display: block;
+  }
+  .lb-body { padding: 32px 64px 80px; }
+  .lb-empty {
+    font-family: var(--mono); font-size: 13px; color: var(--text3);
+    text-align: center; padding: 60px 0; letter-spacing: 0.06em;
+  }
+  .lb-table { width: 100%; border-collapse: collapse; }
+  .lb-table th {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--text3);
+    padding: 12px 16px; text-align: left;
+    border-bottom: 1px solid var(--border2);
+  }
+  .lb-table td {
+    font-family: var(--mono); font-size: 14px; color: var(--text2);
+    padding: 14px 16px; border-bottom: 1px solid var(--border2);
+  }
+  .lb-table tr.is-you td { color: var(--text); background: rgba(34,197,94,0.05); }
+  .lb-rank { font-weight: 600; color: var(--text); }
+  .lb-rank.gold { color: #fbbf24; }
+  .lb-rank.silver { color: #d1d5db; }
+  .lb-rank.bronze { color: #d97706; }
+  .lb-acc { font-weight: 500; }
+  .lb-refresh-btn {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em;
+    text-transform: uppercase; padding: 8px 18px;
+    background: transparent; color: var(--text3);
+    border: 1px solid var(--border); cursor: pointer; transition: all 0.2s;
+    margin-bottom: 20px;
+  }
+  .lb-refresh-btn:hover { border-color: var(--text3); color: var(--text); }
+
+  @media (max-width: 768px) {
+    .lb-header { padding: 28px 20px 20px; }
+    .lb-title { font-size: 26px; }
+    .lb-body { padding: 20px 20px 60px; }
+    .lb-table th, .lb-table td { padding: 10px 10px; font-size: 12px; }
+  }
+  @media (max-width: 480px) {
+    .lb-header { padding: 18px 14px 14px; }
+    .lb-title { font-size: 22px; }
+    .lb-body { padding: 14px 14px 60px; }
+  }
+
+  /* ═══ ANALYTICS PAGE ═══ */
+  #analytics { padding: 80px 0 80px; }
+  .an-header {
+    padding: 48px 64px 32px;
+    border-bottom: 1px solid var(--border2);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .an-title { font-family: var(--serif); font-size: 36px; font-weight: 700; }
+  .an-sub { font-family: var(--mono); font-size: 11px; color: var(--text3); letter-spacing: 0.1em; margin-top: 6px; display: block; }
+  .an-reset-btn {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em;
+    text-transform: uppercase; padding: 10px 22px;
+    background: transparent; color: #ef4444;
+    border: 1px solid #ef444444; cursor: pointer; transition: all 0.2s;
+  }
+  .an-reset-btn:hover { background: rgba(239,68,68,0.08); border-color: #ef4444; }
+  .an-reset-btn.confirming {
+    background: #ef4444; color: #fff; border-color: #ef4444;
+  }
+  body.light .an-reset-btn.confirming { color: #fff; }
+  .an-body { padding: 40px 64px 80px; }
+  .an-empty {
+    font-family: var(--mono); font-size: 13px; color: var(--text3);
+    text-align: center; padding: 80px 0; letter-spacing: 0.08em;
+  }
+  .an-cards {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px; margin-bottom: 40px;
+  }
+  .an-card {
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 24px 24px 20px;
+  }
+  .an-card-val {
+    font-family: var(--serif); font-size: 40px; font-weight: 700;
+    line-height: 1; margin-bottom: 8px;
+  }
+  .an-card-val.green { color: #22c55e; }
+  .an-card-val.red { color: #ef4444; }
+  .an-card-val.white { color: var(--text); }
+  .an-card-label {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--text3);
+  }
+  .an-section-title {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--text3);
+    margin-bottom: 14px; margin-top: 36px;
+    padding-bottom: 10px; border-bottom: 1px solid var(--border2);
+  }
+  .an-acc-bar-wrap {
+    width: 100%; height: 10px; background: var(--surface2);
+    border-radius: 6px; overflow: hidden; margin-bottom: 8px;
+  }
+  .an-acc-bar-fill {
+    height: 100%; background: #22c55e;
+    transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+  }
+  .an-acc-label { font-family: var(--mono); font-size: 12px; color: var(--text3); }
+  .an-type-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 8px;
+  }
+  .an-type-block {
+    background: var(--surface); border: 1px solid var(--border); padding: 20px 22px;
+  }
+  .an-type-label {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text3); margin-bottom: 10px;
+  }
+  .an-type-stat {
+    font-family: var(--serif); font-size: 30px; font-weight: 700; margin-bottom: 4px;
+  }
+  .an-type-sub { font-family: var(--mono); font-size: 11px; color: var(--text3); }
+  .an-table-wrap { overflow-x: auto; margin-top: 4px; }
+  .an-time-table {
+    width: 100%; border-collapse: collapse; min-width: 480px;
+  }
+  .an-time-table th {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--text3);
+    padding: 10px 14px; text-align: left;
+    border-bottom: 1px solid var(--border2);
+  }
+  .an-time-table td {
+    font-family: var(--mono); font-size: 13px; color: var(--text2);
+    padding: 11px 14px; border-bottom: 1px solid var(--border2);
+  }
+  .an-time-table tr:hover td { background: rgba(255,255,255,0.02); cursor: pointer; }
+  .an-res-badge {
+    font-size: 11px; padding: 3px 10px; border-radius: 20px;
+    letter-spacing: 0.04em; display: inline-block;
+  }
+  .an-res-badge.correct { background: rgba(34,197,94,0.12); color: #86efac; border: 1px solid #22c55e44; }
+  .an-res-badge.wrong { background: rgba(239,68,68,0.1); color: #fca5a5; border: 1px solid #ef444444; }
+
+  /* Review Mistakes grid */
+  .an-mistake-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .an-mistake-box {
+    aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 12px; font-weight: 500;
+    border-radius: 6px; cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--surface); color: var(--text3);
+    transition: all 0.15s; user-select: none;
+  }
+  .an-mistake-box:hover { border-color: var(--text3); color: var(--text); transform: translateY(-1px); }
+  .an-mistake-box.still-wrong {
+    background: rgba(239,68,68,0.08);
+    border-color: #ef444455;
+    color: #fca5a5;
+  }
+  .an-mistake-box.fixed {
+    background: rgba(34,197,94,0.1);
+    border-color: #22c55e55;
+    color: #86efac;
+  }
+  .an-mistake-legend {
+    display: flex; gap: 20px; align-items: center; flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .an-slow-bar {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+  }
+  .an-slow-bar-track {
+    flex: 1; height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden;
+  }
+  .an-slow-bar-fill {
+    height: 100%; background: #ef4444; border-radius: 3px;
+  }
+  .an-slow-bar-fill.correct { background: #22c55e; }
+  .an-slow-label {
+    font-family: var(--mono); font-size: 11px; color: var(--text3);
+    min-width: 40px; text-align: right;
+  }
+  .an-slow-num {
+    font-family: var(--mono); font-size: 12px; color: var(--text);
+    min-width: 28px;
+  }
+  @media (max-width: 768px) {
+    .an-header { padding: 28px 20px 20px; }
+    .an-title { font-size: 26px; }
+    .an-body { padding: 24px 20px 60px; }
+    .an-cards { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .an-card { padding: 18px 16px; }
+    .an-card-val { font-size: 32px; }
+    .an-mistake-grid { grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 6px; }
+  }
+  @media (max-width: 480px) {
+    .an-header { padding: 18px 14px 14px; flex-direction: column; align-items: flex-start; }
+    .an-title { font-size: 22px; }
+    .an-body { padding: 16px 14px 60px; }
+    .an-mistake-grid { grid-template-columns: repeat(auto-fill, minmax(36px, 1fr)); gap: 5px; }
+    .an-mistake-box { font-size: 11px; border-radius: 4px; }
+  }
+
+  body.light .home-grid {
+    background-image:
+      linear-gradient(rgba(0,0,0,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,0,0,0.06) 1px, transparent 1px);
+  }
+  /* Bank */
+  body.light .bank-box { background: var(--surface); color: var(--text3); border-color: var(--border); }
+  body.light .bank-box:hover { border-color: var(--text3); color: var(--text); }
+  body.light .legend-dot.unanswered { background: var(--surface2); border-color: var(--border); }
+
+  /* Formula */
+  body.light .formula-box { background: var(--surface); color: var(--text3); border-color: var(--border); }
+  body.light .formula-box:hover { border-color: var(--text3); color: var(--text); }
+  body.light .formula-modal-overlay { background: rgba(0,0,0,0.4); }
+  body.light .formula-modal { background: var(--surface); border-color: var(--border); }
+  body.light .formula-modal-formula { background: var(--surface2); border-color: var(--border); color: var(--text); }
+  body.light .formula-modal-body { color: var(--text2); }
+
+  /* Question choices */
+  body.light .qp-choice-btn { background: var(--surface); border-color: var(--border); color: var(--text); }
+  body.light .qp-choice-btn:hover:not(:disabled) { border-color: var(--text3); background: var(--surface2); }
+  body.light .qp-choice-letter { color: var(--text3); }
+
+  /* Free input */
+  body.light .qp-free-input { border-color: var(--border); color: var(--text); background: transparent; }
+  body.light .qp-free-input:focus { border-color: var(--text); }
+  body.light .qp-submit-btn { color: var(--text3); border-color: var(--border); }
+  body.light .qp-submit-btn:hover:not(:disabled) { border-color: var(--text3); color: var(--text); }
+
+  /* Feedback */
+  body.light .qp-feedback.wrong { background: rgba(239,68,68,0.06); }
+  body.light .qp-feedback.correct { background: rgba(34,197,94,0.08); }
+  body.light .qp-answer-reveal { background: rgba(34,197,94,0.08); }
+  body.light .qp-show-answer-btn { background: transparent; }
+
+  /* Nav actions */
+  body.light .qp-back { color: var(--text3); }
+  body.light .qp-panel-toggle { color: var(--text3); border-color: var(--border); }
+  body.light .qp-prev { color: var(--text3); border-color: var(--border); }
+  body.light .qp-next { background: var(--text); color: var(--bg); }
+
+  /* Mini panel */
+  body.light .qp-mini-panel { background: var(--surface); border-left: 1px solid var(--border); }
+  body.light .mini-box { background: var(--surface2); border-color: var(--border); color: var(--text3); }
+  body.light .mini-box:hover { border-color: var(--text3); color: var(--text); }
+  body.light .mini-box.current { border-color: var(--text); color: var(--text); box-shadow: 0 0 0 1px var(--text); }
+  body.light .qp-mini-close { color: var(--text3); }
+  body.light .qp-mini-title { color: var(--text3); }
+
+  /* Score panel */
+  body.light .score-panel { background: var(--surface); border-top: 1px solid var(--border); color: var(--text3); }
+
+  /* Analytics */
+  body.light .an-card { background: var(--surface); border-color: var(--border); }
+  body.light .an-type-block { background: var(--surface); border-color: var(--border); }
+  body.light .an-reset-btn { color: #ef4444; }
+  body.light .an-time-table th { color: var(--text3); border-color: var(--border2); }
+  body.light .an-time-table td { color: var(--text2); border-color: var(--border2); }
+  body.light .an-time-table tr:hover td { background: rgba(0,0,0,0.03); }
+  body.light .an-acc-bar-wrap { background: var(--border); }
+  body.light .an-slow-bar-track { background: var(--border); }
+  body.light .an-section-title { border-color: var(--border); color: var(--text3); }
+  body.light .login-input { background: var(--surface); border-color: var(--border); }
+  body.light .lb-table tr.is-you td { background: rgba(34,197,94,0.08); }
+
+  /* Home page divider */
+  body.light .home-divider { background: var(--border); }
+
+  /* Scrollbar */
+  body.light ::-webkit-scrollbar-track { background: var(--bg); }
+  body.light ::-webkit-scrollbar-thumb { background: var(--border); }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: #333; }
+
+  /* ═══ RESPONSIVE ═══ */
+
+  /* Tablet: 768px and below */
+  @media (max-width: 768px) {
+    nav { padding: 12px 16px; gap: 8px; }
+    .nav-links {
+      gap: 14px;
+      position: static; left: auto; transform: none;
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
+      scrollbar-width: none; flex: 1;
+      justify-content: center;
+    }
+    .nav-links::-webkit-scrollbar { display: none; }
+    .nav-links a {
+      font-size: 9.5px; white-space: nowrap; flex-shrink: 0;
+    }
+    .theme-toggle { flex-shrink: 0; }
+
+    #home { padding: 80px 24px 80px; }
+    .home-tag { font-size: 10px; letter-spacing: 0.14em; margin-bottom: 32px; }
+    .home-title { font-size: clamp(40px, 12vw, 72px); margin-bottom: 20px; }
+    .home-sub { font-size: 14px; margin-bottom: 40px; }
+    .home-stats { gap: 28px; margin-bottom: 40px; }
+    .stat-num { font-size: 36px; }
+    .stat-label { font-size: 9px; }
+    .home-divider { margin: 0 -14px; }
+    .btn-primary { padding: 14px 32px; font-size: 11px; }
+    .home-aim { font-size: 10px; white-space: normal; text-align: center; width: 90%; }
+
+    .bank-header { padding: 28px 20px 20px; }
+    .bank-title { font-size: 26px; }
+    .bank-meta { font-size: 10px; }
+    .score-panel { padding: 12px 20px; gap: 12px; flex-wrap: wrap; font-size: 10px; }
+  }
+
+  /* Phone: 480px and below */
+  @media (max-width: 480px) {
+    nav { padding: 10px 12px; gap: 6px; }
+    .nav-links { gap: 10px; }
+    .nav-links a { font-size: 8.5px; letter-spacing: 0.06em; }
+    .nav-logo { width: 22px; height: 30px; }
+    .nav-logo:hover { width: 54px; }
+    .logo-svg-wrap { width: 20px; height: 26px; }
+    .logo-img { width: 20px; height: 26px; }
+    .theme-toggle { width: 28px; height: 28px; font-size: 14px; }
+
+    #home { padding: 80px 16px 72px; }
+    .home-title { font-size: clamp(36px, 14vw, 56px); line-height: 1.0; }
+    .home-tag { font-size: 9px; padding: 5px 12px; margin-bottom: 24px; }
+    .home-sub { font-size: 13px; line-height: 1.6; margin-bottom: 32px; }
+    .home-stats { gap: 16px; margin-bottom: 32px; flex-wrap: wrap; justify-content: center; }
+    .home-divider { display: none; }
+    .stat-num { font-size: 32px; }
+    .btn-primary { width: 100%; text-align: center; padding: 16px; }
+    .home-aim { display: none; }
+
+    .bank-header { padding: 18px 14px 12px; flex-direction: column; align-items: flex-start; }
+    .bank-title { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="https://t.me/defxny" target="_blank" rel="noopener">
+    <span class="logo-svg-wrap">
+      <img class="logo-img logo-dark" src="data:image/png;base64,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" alt="defxny"/>
+      <img class="logo-img logo-light" src="data:image/png;base64,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" alt="defxny"/>
+    </span>
+    <span class="logo-word">defxny</span>
+  </a>
+  <div class="nav-links">
+    <a onclick="showPage('home')" id="nav-home" class="active">Home</a>
+    <a onclick="showPage('bank')" id="nav-bank">Question Bank</a>
+    <a onclick="showPage('formulas')" id="nav-formulas">Formulas</a>
+    <a onclick="showPage('analytics')" id="nav-analytics">Analytics</a>
+    <a onclick="showPage('leaderboard')" id="nav-leaderboard">Leaderboard</a>
+  </div>
+  <div id="nav-user-area" style="margin-left:auto; display:flex; align-items:center; gap:14px;">
+    <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">◐</button>
+  </div>
+</nav>
+
+<!-- LOGIN PAGE -->
+<div id="login" class="page">
+  <div class="login-box">
+    <div class="login-title" id="login-title">Welcome back</div>
+    <div class="login-sub">Sign in to save your progress and join the leaderboard</div>
+
+    <div class="login-field">
+      <label class="login-label">Username</label>
+      <input type="text" class="login-input" id="login-username" placeholder="your_username" autocomplete="username">
+    </div>
+    <div class="login-field">
+      <label class="login-label">Password</label>
+      <input type="password" class="login-input" id="login-password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+
+    <button class="login-btn" id="login-submit-btn" onclick="handleAuthSubmit()">Sign In</button>
+    <div class="login-error" id="login-error"></div>
+
+    <div class="login-switch" id="login-switch">
+      Don't have an account? <a onclick="toggleAuthMode()">Sign up</a>
+    </div>
+
+    <div class="login-guest">
+      <a onclick="continueAsGuest()">Continue without an account →</a>
+    </div>
+  </div>
+</div>
+
+<!-- LEADERBOARD PAGE -->
+<div id="leaderboard" class="page" style="display:none;">
+  <div class="lb-header">
+    <h2 class="lb-title">Leaderboard</h2>
+    <span class="lb-sub">See how you stack up against friends</span>
+  </div>
+  <div class="lb-body">
+    <button class="lb-refresh-btn" onclick="loadLeaderboard()">↻ Refresh</button>
+    <div id="lb-content">
+      <div class="lb-empty">Loading leaderboard…</div>
+    </div>
+  </div>
+</div>
+
+<!-- HOME PAGE -->
+<div id="home" class="page active">
+  <div class="home-grid"></div>
+  <div class="home-tag">Digital SAT · Mathematics</div>
+  <h1 class="home-title">Aim for<br><em>800.</em></h1>
+  <p class="home-sub">150 hard questions designed for students aiming for scores of 700+ on the Digital SAT Math test. Curated, solved, and ready to practice.</p>
+  <div class="home-stats">
+    <div class="stat">
+      <span class="stat-num">150</span>
+      <span class="stat-label">Questions</span>
+    </div>
+    <div class="home-divider"></div>
+    <div class="stat">
+      <span class="stat-num">700<span style="font-size:28px">+</span></span>
+      <span class="stat-label">Target Score</span>
+    </div>
+    <div class="home-divider"></div>
+    <div class="stat">
+      <span class="stat-num">∞</span>
+      <span class="stat-label">Practice</span>
+    </div>
+  </div>
+  <button class="btn-primary" onclick="showPage('bank')">Enter Question Bank →</button>
+  <p class="home-aim">Topics: Algebra · Functions · Geometry · Statistics · Probability</p>
+</div>
+
+<!-- QUESTION BANK PAGE -->
+<div id="bank" class="page">
+  <div class="bank-header">
+    <div class="bank-header-left">
+      <h2 class="bank-title">Question Bank</h2>
+      <span class="bank-meta" id="bank-meta">0 / 150 answered</span>
+    </div>
+    <div class="bank-legend">
+      <span class="legend-item"><span class="legend-dot unanswered"></span>Unanswered</span>
+      <span class="legend-item"><span class="legend-dot correct"></span>Correct</span>
+      <span class="legend-item"><span class="legend-dot wrong"></span>Wrong</span>
+    </div>
+  </div>
+  <div class="bank-grid" id="bank-grid"></div>
+</div>
+
+<!-- QUESTION PAGE -->
+<div id="qpage" class="page" style="display:none; padding-top:0;">
+  <!-- Top bar -->
+  <div class="qp-topbar">
+    <button class="qp-back" onclick="goBackToBank()">← Back</button>
+    <div class="qp-center">
+      <span class="qp-num" id="qp-num">1</span>
+      <div class="qp-timer" id="qp-timer">0:00</div>
+    </div>
+    <button class="qp-panel-toggle" id="qp-panel-toggle" onclick="toggleQPanel()">☰ Questions</button>
+  </div>
+
+  <!-- Question content -->
+  <div class="qp-body">
+    <div class="qp-question" id="qp-question"></div>
+    <div class="qp-actions">
+      <button class="qp-prev" id="qp-prev" onclick="goPrevQuestion()">← Prev</button>
+      <span class="qp-progress-info" id="qp-progress-info">0 / 150 answered</span>
+      <button class="qp-next" onclick="goNextQuestion()">Next →</button>
+    </div>
+  </div>
+
+  <!-- Floating mini panel -->
+  <div class="qp-mini-panel" id="qp-mini-panel">
+    <div class="qp-mini-header">
+      <span class="qp-mini-title">Questions</span>
+      <button class="qp-mini-close" onclick="toggleQPanel()">✕</button>
+    </div>
+    <div class="qp-mini-legend">
+      <span class="legend-item sm"><span class="legend-dot unanswered"></span>Unanswered</span>
+      <span class="legend-item sm"><span class="legend-dot correct"></span>Correct</span>
+      <span class="legend-item sm"><span class="legend-dot wrong"></span>Wrong</span>
+    </div>
+    <div class="qp-mini-grid" id="qp-mini-grid"></div>
+  </div>
+</div>
+
+<!-- FORMULA PAGE -->
+<div id="formulas" class="page" style="display:none;">
+  <div class="formulas-header">
+    <div>
+      <h2 class="formulas-title">Formulas</h2>
+      <span class="formulas-sub">Key formula for each question — click a box to reveal</span>
+    </div>
+  </div>
+  <div class="formulas-grid" id="formulas-grid"></div>
+</div>
+
+<!-- ANALYTICS PAGE -->
+<div id="analytics" class="page" style="display:none;">
+  <div class="an-header">
+    <div>
+      <h2 class="an-title">Analytics</h2>
+      <span class="an-sub">Your performance across all 150 questions</span>
+    </div>
+    <button class="an-reset-btn" id="reset-btn" onclick="handleResetClick()">Reset Progress</button>
+  </div>
+  <div class="an-body" id="an-body">
+    <div class="an-empty" id="an-empty">No data yet — start answering questions to see your analytics.</div>
+  </div>
+</div>
+
+<!-- FORMULA MODAL -->
+<div class="formula-modal-overlay" id="formula-modal-overlay" onclick="closeFormulaModal(event)">
+  <div class="formula-modal" onclick="event.stopPropagation()">
+    <button class="formula-modal-close" onclick="closeFormulaModal()">✕</button>
+    <div class="formula-modal-num" id="fm-num"></div>
+    <div class="formula-modal-title" id="fm-title"></div>
+    <div class="formula-modal-formula" id="fm-formula"></div>
+    <div class="formula-modal-body" id="fm-body"></div>
+  </div>
+</div>
+
+<!-- SCORE PANEL -->
+<div class="score-panel" id="score-panel">
+  <span class="score-label">Session Score</span>
+  <strong id="sc-correct" class="green">0</strong><span> correct</span>
+  <strong id="sc-wrong" class="red">0</strong><span> wrong</span>
+  <strong id="sc-pct">—</strong><span> accuracy</span>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// SUPABASE CONFIG — fill these in with your own project values
+// (see setup instructions provided separately)
+// ══════════════════════════════════════════════
+const SUPABASE_URL = 'https://bmnnzjnksfqyywvjhjlq.supabase.co';      
+const SUPABASE_ANON_KEY = 'sb_publishable_CTK88OspyCkrK2riYfLb2w_ELLtiiCT';
+
+let supabaseClient = null;
+let currentUser = null; // { id, username }
+let authMode = 'signin'; // 'signin' | 'signup'
+
+function initSupabase() {
+  if (SUPABASE_URL === 'https://bmnnzjnksfqyywvjhjlq.supabase.co' || SUPABASE_ANON_KEY === 'sb_publishable_CTK88OspyCkrK2riYfLb2w_ELLtiiCT') {
+    console.warn('Supabase not configured yet — leaderboard and accounts disabled.');
+    return false;
+  }
+  try {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    return true;
+  } catch (e) {
+    console.error('Supabase init failed', e);
+    return false;
+  }
+}
+
+// ══════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════
+const QUESTIONS = [
+  {id:1,type:"free",answer:"22.75",altAnswers:["91/4"],display:"22.75 or 91/4",
+   text:`(x + 7) is a factor of the quadratic function y = f(x), and x = c is a positive zero of the function. If the minimum of the function is (63/8, k), what is the value of c?`},
+  {id:2,type:"free",answer:"2",altAnswers:[],display:"2",
+   text:`For two acute angles, ∠A and ∠B, cos A = sin B. The measures, in degrees, of ∠A and ∠B are 13x + 10 and 48 + 3x, respectively. What is the value of x?`},
+  {id:3,type:"mc",answer:"C",choices:{A:"R(m) = 95mn + 55",B:"R(m) = 95mn + 150",C:"R(m) = 95mn + 55n",D:"R(m) = 95mn + 150n"},
+   text:`A baseball coach charges each athlete $150 for the first month and $95 for each additional month. Which of the following functions correctly represents the total revenue R(m), in dollars, for m months and n athletes, where m and n are positive integers?`},
+  {id:4,type:"mc",answer:"A",choices:{A:"−2",B:"−4",C:"12",D:"16"},
+   text:`y = −3x² − 58\ny = px − 46\n\nIn the given system of equations, p is a constant. The graphs intersect at exactly one point (x, y) in the xy-plane. Which of the following could be the value of x?`},
+  {id:5,type:"mc",answer:"D",choices:{A:"f(x) = −7x − 28",B:"f(x) = −7x − 8",C:"f(x) = −7x + 8",D:"f(x) = −7x + 12"},
+   text:`f(x) = −7x + b\n\nFor the given function f(x), which of the following gives the equation for f(x) + 20, given that the point (−4, 0) lies on the graph of f(x) − 20?`},
+  {id:6,type:"mc",answer:"D",choices:{A:"267",B:"336",C:"550",D:"685"},
+   text:`The positive number a is 480% of the number b, and a is 70% of the number c. If c is p% of b, which of the following is closest to the value of p?`},
+  {id:7,type:"free",answer:"11",altAnswers:[],display:"11",
+   text:`f(x) = aˣ − b\n\nThe exponential function given above passes through points (c, 8) and (2c, 350). What is a possible value of b?`},
+  {id:8,type:"free",answer:"10800",altAnswers:["10,800"],display:"10,800",
+   text:`Two similar cylinders: Cylinder A has volume 1,296π (SA = kπ, radius = 9 cm). Cylinder B has volume 162,000π (SA = jπ).\n\nVolume = πr²h, Surface area = 2πr² + 2πrh\n\nWhat is the value of j − k?`},
+  {id:9,type:"mc",answer:"B",choices:{A:"f(x) = 56(2)^(6x)",B:"f(x) = 56(8)^(2x)",C:"f(x) = 56(64)^x",D:"f(x) = 56(4096)^(x/2)"},
+   text:`For the function f, for every increase of 1/2 in the value of x, the value of f(x) increases by a factor of c, where c is a constant. Which of the following forms of function f displays the value of c as the base or coefficient?`},
+  {id:10,type:"free",answer:"10000",altAnswers:["10,000"],display:"10,000",
+   text:`The quadratic function ax² + 200x + c has at least one real solution. What is the greatest possible value of ac?`},
+  {id:11,type:"free",answer:"95/97",altAnswers:[],display:"95/97",
+   text:`A polygon has exactly 97 sides. If the measure of each of the 97 interior angles of this polygon is (180p)°, what is the value of p?`},
+  {id:12,type:"mc",answer:"D",choices:{A:"552",B:"964",C:"9,645",D:"16,974,848"},
+   text:`A certain town has an area of 5.48 square miles. Which of the following is closest to the area, in square yards? (1 mile = 1,760 yards)`},
+  {id:13,type:"mc",answer:"A",choices:{A:"x = 15y",B:"(1/7)x = 15y",C:"x = 15y − 19",D:"(1/7)x = 15y − 19"},
+   text:`One of the two equations in a system of linear equations is given. The system has no solution. Which equation could be the second equation?\n\n7x = 105y − 133`},
+  {id:14,type:"mc",answer:"A",choices:{A:"(2√7)/8",B:"(2√7)/6",C:"(6√2)/14",D:"8/(23√2)"},
+   text:`In triangle ABC, the sum of angle A and angle B is 90 degrees. The value of sin(A) is (2√7)/8. What is the value of cos(B)?`},
+  {id:15,type:"mc",answer:"D",choices:{A:"−5 only",B:"5 only",C:"5 or −5",D:"0"},
+   text:`What is the value of k/25 if the given equation only has one solution?\n\n25|x − 4| = k`},
+  {id:16,type:"free",answer:"-28/3",altAnswers:["-9.333","-9.33"],display:"−28/3 or −9.333",
+   text:`In the given system of equations, k is a constant. If the system has no solution, what is the value of k?\n\n(3/8)x + (7/5)y = 9/7 − (7/5)y\n(5/4)x + 9/4 = ky + 4/3`},
+  {id:17,type:"mc",answer:"D",choices:{A:"(−7, 11)",B:"(11, −7)",C:"(√11 + 7, √14 − 11)",D:"(√11 − 7, √14 + 11)"},
+   text:`In the xy-plane, the graph of the given equation is a circle. Which point lies on this circle?\n\n(x + 7)² + (y − 11)² = 25`},
+  {id:18,type:"mc",answer:"D",choices:{A:"2.5",B:"2.7",C:"5",D:"10"},
+   text:`The area of a triangle is equal to x² square inches. The base of the triangle is 5 + 2x inches, and the height of the triangle is x − 2 inches. What is the value of x?`},
+  {id:19,type:"free",answer:"-86",altAnswers:[],display:"−86",
+   text:`A circle in the xy-plane has its center at (3, −7) and has a radius of 12. An equation of this circle is x² + y² + ax + by + c = 0, where a, b, and c are constants. What is the value of c?`},
+  {id:20,type:"free",answer:"2197",altAnswers:["2,197"],display:"2,197",
+   text:`Sphere A has a radius of 7x and sphere B has a radius of 91x. The volume of sphere B is how many times the volume of sphere A?`},
+  {id:21,type:"mc",answer:"C",choices:{A:"c = 48k/79",B:"c = 96k/79",C:"c = 79(k/24)",D:"c = 79(k/96)"},
+   text:`One gallon of resin costs $79 and will cover 48 square feet. The countertops in a given room have a total surface area of k square feet. Which equation represents the cost c, in dollars, of resin needed to cover the countertops twice?`},
+  {id:22,type:"mc",answer:"C",choices:{A:"(r, −4r/5 + 15/8)",B:"(r, 5r/4 + 4/5)",C:"(−4r/5 + 3/2, r)",D:"(2r/5 + 10, −2r/5 + 25)"},
+   text:`For each real number r, which of the following points lies on the graph of each equation in the xy-plane?\n\n10x + 8y = 15\n25x + 20y = 37.5`},
+  {id:23,type:"mc",answer:"A",choices:{A:"The first sample contained fewer employees than the second sample.",B:"The first sample contained more employees than the second sample.",C:"The first sample contained a lower percentage that planned to vote in favor.",D:"The first sample contained a higher percentage that planned to vote in favor."},
+   text:`A researcher selected 2 random samples. First: 68% in favor, margin of error 9.7%. Second: 84% in favor, margin of error 6.7%. Which best explains why the second sample obtained a smaller margin of error?`},
+  {id:24,type:"free",answer:"-336",altAnswers:[],display:"−336",
+   text:`The function f is defined by f(x) = aˣ + b. The graph of y = f(x) has an x-intercept at (3, 0) and a y-intercept at (0, −342). What is the value of a + b?`},
+  {id:25,type:"free",answer:"7500",altAnswers:["7,500"],display:"7,500",
+   text:`684 is p% greater than 9. What is the value of p?`},
+  {id:26,type:"free",answer:"23/40",altAnswers:["0.575",".575"],display:"23/40 or 0.575",
+   text:`Two numbers a and b are each greater than zero, and the fifth root of a is equal to the cube root of b. For what value of x is a^(8x−4) equal to b?`},
+  {id:27,type:"free",answer:"7007",altAnswers:["7,007"],display:"7,007",
+   text:`For the given system of equations, what is the value of 7(j − k)?\n\n(j − k) − 16(m + l) = 689\n(j − k) + 12(m + l) = 1,235`},
+  {id:28,type:"mc",answer:"B",choices:{A:"1/14",B:"1/7",C:"7",D:"14"},
+   text:`A model estimates 24,000 bacteria initially. 14 days later, 96,000 bacteria. The formula B = a(2)^(xd) gives the estimate, where d is days after the initial measurement. What is the value of x?`},
+  {id:29,type:"free",answer:"4",altAnswers:[],display:"4",
+   text:`How many liters of a 30% chlorine solution must be added to 12 liters of a 10% chlorine solution to obtain a 15% chlorine solution?`},
+  {id:30,type:"mc",answer:"C",choices:{A:"456π/6",B:"459π/6",C:"462π/6",D:"468π/6"},
+   text:`In the xy-plane, points a(1,0), b(0,0), and c(−1,0) are given. Which of the following gives a possible angle measure, in radians, of ∠abc?`},
+  {id:31,type:"free",answer:"173",altAnswers:[],display:"173",
+   text:`Two data sets A and B have 56 values in total with average 193. Data set A contains 32 values with average 208. What is the average of data set B?`},
+  {id:32,type:"mc",answer:"C",choices:{A:"(m − 6, −4)",B:"(m + 9, 24)",C:"(21, m − 17)",D:"(24, m + 12)"},
+   text:`Lines k and l are perpendicular. The point (4, m) and (9, m + 3) lie on line k, and lines k and l intersect at (9, m + 3). Which of the following can lie on line l?`},
+  {id:33,type:"mc",answer:"A",choices:{A:"Both the mean and standard deviation of data set B are less than those in data set A.",B:"Both the mean and standard deviation of data set B are greater than those in data set A.",C:"The standard deviation of data set B is less but the mean is the same.",D:"The standard deviation of data set B is greater but the mean is the same."},
+   text:`Data set A: 37 values, min=230, max=278, mean=244, SD=9. Values 230 and 278 are removed to create data set B. Which statement is true?`},
+  {id:34,type:"mc",answer:"D",choices:{A:"a − 20",B:"2a − 10",C:"2a − 20",D:"3a − 20"},
+   text:`If a > 0, x² + y² = a and xy = a − 10, what is (x + y)² in terms of a?`},
+  {id:35,type:"free",answer:"2",altAnswers:[],display:"2",
+   text:`Rectangle A (50 ft × 45 ft) is inside rectangle B. A uniform distance x separates the sides. The area of rectangle B is 2,646 square feet. What is the value of x?`},
+  {id:36,type:"mc",answer:"D",choices:{A:"c = 200b/100",B:"c = 2b/100",C:"c = (b + 1)100",D:"c = (b − 1)100"},
+   text:`f(x) = 200(b)^x. When x increases by 1, f(x) increases by c%. Which of the following expresses c in terms of b?`},
+  {id:37,type:"mc",answer:"B",choices:{A:"(1.25/16)c + (0.85/23)b = 34",B:"(16/1.25)c + (23/0.85)b = 34",C:"(1.25/16)b + (0.85/23)c = 34",D:"(16/1.25)b + (23/0.85)c = 34"},
+   text:`A 34 lb dog eats chicken (1.25 cans/16 lbs/day) and beef (0.85 cans/23 lbs/day). c = cans of chicken, b = cans of beef. Which equation describes all possible values of c and b?`},
+  {id:38,type:"mc",answer:"D",choices:{A:"384",B:"432",C:"480",D:"512"},
+   text:`A quadratic function models height. Object launches from ground (0 ft) and reaches max height 576 ft at 12 seconds. What is the height, in feet, at 16 seconds?`},
+  {id:39,type:"free",answer:"62",altAnswers:[],display:"62",
+   text:`Budget $3,600/year. Min 345 slats. Pine pulpwood: $7.25/slat. Pine sawtimber: $24.75/slat. What is the maximum number of pine sawtimber slats the owner can purchase?`},
+  {id:40,type:"free",answer:"120",altAnswers:[],display:"120",
+   text:`A 180 gram metal alloy is 50% aluminum. It contains a 30% aluminum alloy and a 60% aluminum alloy. What is the mass of the second (60%) metal alloy?`},
+  {id:41,type:"mc",answer:"A",choices:{A:"√3/2",B:"1/2",C:"2√3/3",D:"2"},
+   text:`In the given figure, the hypotenuse is 64 and one angle is 60°. What is cos x°? (Note: x° is the remaining acute angle)`},
+  {id:42,type:"free",answer:"17",altAnswers:[],display:"17",
+   text:`88 basketball players: Point guard 26, Shooting guard 16, Small forward 11, Power forward or center 35. P(power forward | not shooting guard) = 3/12. How many players are centers?`},
+  {id:43,type:"mc",answer:"D",choices:{A:"96",B:"192",C:"222",D:"240"},
+   text:`A quadratic function models height. At t=9 sec: 294 ft above ground. At t=13 sec: 310 ft. Object launched at height 24 ft. What is the height at t=18 seconds?`},
+  {id:44,type:"free",answer:"369",altAnswers:[],display:"369",
+   text:`A rectangular pyramid has a square base with area 324 m². Volume = 4,320 m³. What is the surface area, in m², of one triangular face?`},
+  {id:45,type:"free",answer:"19/24",altAnswers:["0.792",".792"],display:"19/24 ≈ 0.792",
+   text:`n^(5/3) = k^(2/5) and n^(4a+1) = k. What is the value of a?`},
+  {id:46,type:"mc",answer:"D",choices:{A:"m is a factor of b",B:"a is a factor of 112",C:"a is a factor of b",D:"l is a factor of 112"},
+   text:`3x² + bx − 112 = (ax + m)(x − l). Given that a, m, and l are integers, which of the following must be true?`},
+  {id:47,type:"free",answer:"76",altAnswers:[],display:"76",
+   text:`The perimeter of a right isosceles triangle is 76 + 76√2. What is the length of the hypotenuse?`},
+  {id:48,type:"mc",answer:"B",choices:{A:"Sample A had a larger sample size.",B:"Sample A had a smaller sample size.",C:"Sample A had a smaller number of votes that could not be recorded.",D:"Sample A had a lower percent of favorable responses."},
+   text:`Sample A: 67.83% in favor, MOE 7.8%. Sample B: 72.94% in favor, MOE 4.5%. What is the most appropriate reason that MOE for sample A is greater than for sample B?`},
+  {id:49,type:"free",answer:"3600",altAnswers:["3,600"],display:"3,600",
+   text:`360 is p% of 10. What is the value of p?`},
+  {id:50,type:"free",answer:"61.75",altAnswers:["247/4"],display:"61.75 or 247/4",
+   text:`The vertex of f(x) is (9, −13), and the point (3, −4) lies on the parabola. If g(x) = 4f(x − 2), what is the value of g(0) − f(0)?`},
+  {id:51,type:"mc",answer:"B",choices:{A:"No solutions",B:"One solution",C:"Two solutions",D:"Infinite solutions"},
+   text:`−377x + k = 377x + k\n\nIf k is a constant, how many solutions does the given equation have?`},
+  {id:52,type:"mc",answer:"A",choices:{A:"264",B:"377",C:"1,571",D:"2,245"},
+   text:`The density of a certain type of wood is 770 kg/m³. A cube-shaped sample has each edge length of 0.7 meters. To the nearest whole number, what is the mass in kilograms?`},
+  {id:53,type:"free",answer:"20.25",altAnswers:["81/4"],display:"20.25 or 81/4",
+   text:`The graph of a linear equation passes through (−21, −89/2) and (12, 65/2). The graph also passes through (27/4, a). What is the value of a?`},
+  {id:54,type:"free",answer:"133",altAnswers:[],display:"133",
+   text:`In △ABC, ∠B is a right angle and AB = 456 mm. If cos C = 7/25, what is the length of BC in millimeters?`},
+  {id:55,type:"mc",answer:"C",choices:{A:"I is sufficient, but II and III are not.",B:"II is sufficient, but I and III are not.",C:"III is sufficient, but I and II are not.",D:"II and III are sufficient, but I is not."},
+   text:`In triangles ABC and DEF, BC = EF = 37 in, ∠B = ∠E = 63°. Which additional information proves △ABC ≅ △DEF?\n\nI. Angles A and C are equal.\nII. Sides AC and DF are equal.\nIII. Angles A and D are equal.`},
+  {id:56,type:"free",answer:"1/77",altAnswers:[],display:"1/77",
+   text:`77x² + (7j + 11k)x + jk = 0\n\nIn the given equation, j and k are positive constants. The product of the solutions is ajk. What is the value of a?`},
+  {id:57,type:"free",answer:"900",altAnswers:[],display:"900",
+   text:`The number j is 2,400% greater than the number k. The number k is 350% greater than 8. What is the value of j?`},
+  {id:58,type:"free",answer:"136",altAnswers:[],display:"136",
+   text:`A square is inscribed in a circle with the equation x² + y² − 8x + 10y = 27. What is the area of the square?`},
+  {id:59,type:"mc",answer:"C",choices:{A:"(20/19b)(a)^(4/5)",B:"(20/19b)(a)^(5/4)",C:"20(a/19b)^(5/4)",D:"20(a/19b)^(4/5)"},
+   text:`The equation a = 19b · ⁵√((c/20)⁴) relates distinct positive real numbers a, b and c. Which equation correctly expresses c in terms of a and b?`},
+  {id:60,type:"free",answer:"13/84",altAnswers:["0.155"],display:"13/84 ≈ 0.155",
+   text:`Triangle ABC is inscribed in a circle with radius 85. Length of AC = 170, length of BC = 168. What is the value of AB/BC?`},
+  {id:61,type:"mc",answer:"D",choices:{A:"f(x) = 729(3)^(x+2)",B:"f(x) = 6,561(3)^x",C:"f(x) = 177,147(3)^(x−3)",D:"f(x) = 59,049(3)^(x−2)"},
+   text:`For the exponential function f, the value of f(2) is k. Which of the following equivalent forms shows the value of k as the coefficient or the base?`},
+  {id:62,type:"free",answer:"27/16",altAnswers:["1.6875","1.69"],display:"27/16 ≈ 1.6875",
+   text:`Two numbers r and s are each greater than zero. The fourth root of r equals the seventh root of s. For what value of x is r^(4x−5) equal to s?`},
+  {id:63,type:"free",answer:"2401",altAnswers:["2,401"],display:"2,401",
+   text:`The given equation ax² + 98x + c has at least 1 real root and a factor of kx + j. What is the greatest possible value of ac?`},
+  {id:64,type:"free",answer:"-11",altAnswers:[],display:"−11",
+   text:`7kx + 13my = 20.5\n6kx + 5my = −48\n\nThe system has a solution of (2, y). What is the value of k?`},
+  {id:65,type:"free",answer:"-113",altAnswers:[],display:"−113",
+   text:`g(x) = (f(x)+5)/(x+8) and f is linear. From the table: g(4)=9 and g(2)=0. What is the y-coordinate of the y-intercept of y = f(x)?`},
+  {id:66,type:"mc",answer:"B",choices:{A:"0.5",B:"1",C:"2",D:"90"},
+   text:`What is the value of sin(x°) · cos(90 − x°) + sin(90 − x°) · cos(x°)?`},
+  {id:67,type:"free",answer:"16",altAnswers:[],display:"16",
+   text:`26 black, 8 green, and 26 blue+red marbles in a bag. P(red | not black) = 5/17. What is the number of blue marbles?`},
+  {id:68,type:"free",answer:"73728",altAnswers:["73,728"],display:"$73,728",
+   text:`Garden dimensions: 54 ft × 192 ft × 2 ft. Topsoil costs $96 per cubic yard. How much does the gardener need to spend? (1 yard = 3 feet)`},
+  {id:69,type:"mc",answer:"C",choices:{A:"(k + 20, j + 21)",B:"(k − 20, j − 21)",C:"(−k + 21, j + 20)",D:"(−k − 21, −j − 20)"},
+   text:`In the xy-plane, which of the following points lies on a circle with the equation (x + k)² + (y − j)² = 841?`},
+  {id:70,type:"mc",answer:"B",choices:{A:"k < −3/4",B:"k > −3/4",C:"k ≤ 3/4",D:"k ≥ 3/4"},
+   text:`Which of the following inequalities gives all possible values of k where the equation below has no solution?\n\n4 − 4|7/8 + (4/5)x| = 57/12 + k`},
+  {id:71,type:"free",answer:"7.25",altAnswers:["29/4"],display:"29/4 or 7.25",
+   text:`A table (348 lbs) puts equal pressure on each of its 4 identical legs. If each leg exerts 12 psi, what is the area, in square inches, of the bottom of each leg?`},
+  {id:72,type:"free",answer:"22",altAnswers:[],display:"22",
+   text:`In the figure, parallel lines a and b are intersected by transversals. Angles shown: 123°, 81°, 116°, x°, y°. What is the value of x + y?`},
+  {id:73,type:"mc",answer:"B",choices:{A:"I only",B:"II only",C:"I and II",D:"Neither I nor II"},
+   text:`Which equation displays, as a constant or coefficient, the maximum value of the function it defines, where x ≥ 0?\n\nI. f(x) = 232(0.4)^(x+2)\nII. g(x) = 232(0.4)(0.4)(0.4)^(x−2)`},
+  {id:74,type:"mc",answer:"C",choices:{A:"k/2",B:"k√3/6",C:"k√3/3",D:"k√3/2"},
+   text:`An equilateral triangle with side lengths of k is inscribed in a circle. Which of the following defines the radius r in terms of k?`},
+  {id:75,type:"mc",answer:"D",choices:{A:"x > k",B:"x < j",C:"x < j or x > b",D:"a < x < b"},
+   text:`f(x) = 3^x and g(x) is an increasing linear function. They intersect at (a, j) and (b, k), where j < k. When g(x) > f(x), which must be true?`},
+  {id:76,type:"free",answer:"0.25",altAnswers:["1/4"],display:"1/4 or 0.25",
+   text:`If 2a/b = 4.25 and a/(bn) = 8.5, what is the value of n?`},
+  {id:77,type:"free",answer:"10.7",altAnswers:[],display:"10.7",
+   text:`An object's speed is increasing at 4.80 m/s². What is the rate in miles per minute squared, rounded to the nearest tenth? (1 mile = 1,609 meters)`},
+  {id:78,type:"mc",answer:"A",choices:{A:"37 is 19 less than the estimated sound pressure level at frequency of 50.",B:"37 is 19 less than the estimated sound pressure level at frequency of 0.",C:"37 is the estimated sound pressure level at frequency of 50.",D:"37 is the estimated sound pressure level at frequency of 0."},
+   text:`y = 19(0.978)^(x−50) + 37 gives estimated sound pressure level y (dB) at octave band frequency x Hz, where x ≥ 50. What is the best interpretation of 37?`},
+  {id:79,type:"free",answer:"-40",altAnswers:[],display:"−40",
+   text:`The graph of y = f(x) intersects the x-axis when x = 74 and x = k. The maximum occurs at (17, m). What is the value of k?`},
+  {id:80,type:"free",answer:"129",altAnswers:[],display:"129",
+   text:`Three points on f(x): f(−9)=155, f(−3)=227, f(3)=155. If g(x) = f(x + 4), what is the y-intercept of g(x)?`},
+  {id:81,type:"mc",answer:"A",choices:{A:"60√3",B:"90",C:"90√3",D:"120√3"},
+   text:`Triangle ABC is equilateral with a height of 30 meters. What is the perimeter of triangle ABC in meters?`},
+  {id:82,type:"free",answer:"-198",altAnswers:[],display:"−198",
+   text:`−19(6x − 4)² + 6(6x − 3)²\n\nThe expression can be rewritten as (a/9)x² + (b/9)x + c/9, where a, b, and c are constants. What is the value of a + b + c?`},
+  {id:83,type:"free",answer:"34",altAnswers:[],display:"34",
+   text:`A rectangular area has 3,179 equal squares each with area k. The length is 2.75 times the width, and the width equals x√k. What is the value of x?`},
+  {id:84,type:"mc",answer:"A",choices:{A:"(3r, (7r−13)/3)",B:"((7r+13)/3, 3r)",C:"(−7r/9 + 39, 7r/9 + 195)",D:"(r/5 + 39, −r/5 + 195)"},
+   text:`7x − 9y = 39\n35x − 45y = 195\n\nFor any real number r, which of the following points lies on the graph of both equations?`},
+  {id:85,type:"free",answer:"6",altAnswers:[],display:"6",
+   text:`f(x) = x² + 5x − 6 has solutions j and k (j<k). g(x) = x² + 2x − 35 has solutions l and m (l<m). h(x) = x² + 7x + c has solutions k+l and m+j, and can be rewritten as (x+a)(x+b). What is the value of c?`},
+  {id:86,type:"mc",answer:"B",choices:{A:"f(x) = 64(16)^x",B:"f(x) = 65,536(16)^x",C:"f(x) = 1,048,576(16)^x",D:"f(x) = (1/65,536)(16)^x"},
+   text:`For the exponential function f(x) = 16^(x+4), which answer expresses the minimum value as a constant or coefficient when x ≥ 0?`},
+  {id:87,type:"free",answer:"24",altAnswers:[],display:"24",
+   text:`For parabola ax² + bx + c, the x-intercepts are at (14, 0) and (k, 0). If f(27) = f(11), what is the value of k?`},
+  {id:88,type:"mc",answer:"D",choices:{A:"6",B:"8",C:"9",D:"12"},
+   text:`A quadratic function models a projectile's height. Launched from height a meters, reaches max height 134 m at t=6 seconds. How many seconds after launch does it return to height a?`},
+  {id:89,type:"free",answer:"37.5",altAnswers:[],display:"37.5",
+   text:`A 100 gram alloy is 40% silver, containing a 65% silver alloy and a 25% silver alloy. What is the mass of the first (65%) metal alloy?`},
+  {id:90,type:"mc",answer:"D",choices:{A:"1,242/1,760",B:"1,242/(1,760)²",C:"1,242(1,760)",D:"1,242(1,760)²"},
+   text:`Joshua Tree National Park has an area of 1,242 square miles. What is the area in square yards? (1 mile = 1,760 yards)`},
+  {id:91,type:"free",answer:"4",altAnswers:[],display:"4",
+   text:`Two ranches A (168 horses) and B (344 horses). Male:female ratio is 1:15 for total. Female horses A:B = 7:17. How many more male horses are on Ranch A than on Ranch B?`},
+  {id:92,type:"free",answer:"48",altAnswers:[],display:"48",
+   text:`In the figure, BC is the diameter of the circle with length 132. AB = √363. (Angle A = 90°, D is the foot of altitude from A to BC.) What is the value of BC/BD?`},
+  {id:93,type:"mc",answer:"B",choices:{A:"N(d) = 5,000(4)^(11d/8)",B:"N(d) = 5,000(4)^(8d/11)",C:"N(d) = 5,000(4)^(5d/4)",D:"N(d) = 5,000(4)^(4d/5)"},
+   text:`A bacterial colony has 5,000 spores and quadruples every 33 hours. Which function N gives the number of spores d days from now?`},
+  {id:94,type:"free",answer:"9/7",altAnswers:["1.286","1.29"],display:"9/7 ≈ 1.286",
+   text:`a and b are constants, a>1 and b>1. What is the value of x?\n\n⁷√(a⁵) = √(b⁵)\na^(3x−3) = b³`},
+  {id:95,type:"free",answer:"3900",altAnswers:["3,900"],display:"3,900",
+   text:`a is 3,700% greater than b. a is also 5% less than c. What percent greater than b is c?`},
+  {id:96,type:"free",answer:"354",altAnswers:[],display:"354",
+   text:`6 times as many people voted in favor as against. 1,770 more people voted in favor. How many people voted against the proposal?`},
+  {id:97,type:"mc",answer:"C",choices:{A:"5,346",B:"12,474",C:"87,318",D:"611,226"},
+   text:`Two similar rectangles: A has volume 4,374 in³ and SA 1,782 in². B has volume 1,500,282 in³ and SA k in². What is the value of k?`},
+  {id:98,type:"mc",answer:"D",choices:{A:"2",B:"4",C:"119/24",D:"7"},
+   text:`The system has two distinct real solutions. Which could be the value of c?\n\ny = x − c\ny = −6(x − 5)²`},
+  {id:99,type:"mc",answer:"B",choices:{A:"z > y",B:"z < y",C:"z = y",D:"z + y = 90"},
+   text:`Parallel lines a and b are intersected by lines c, d, and e. If x = 54, v = 127, and w > x, which statement about y and z must be true?`},
+  {id:100,type:"free",answer:"200",altAnswers:[],display:"200",
+   text:`An equilateral triangle has a perimeter of 1,200 meters. If the height of the triangle equals x√3, what is the value of x?`},
+  {id:101,type:"free",answer:"35",altAnswers:["36","37"],display:"35, 36, or 37",
+   text:`f(x) = (x + a)(x + b), where a and b are integer constants. f(−21) > 0, f(−15) > 0, and f(−18) < 0. What is one possible value of a + b?`},
+  {id:102,type:"mc",answer:"D",choices:{A:"−3x + 7y = −9 and 3x − 7y = 9",B:"3x − 7y = 5 and 2x + 8y = 6",C:"4x − 9y = 7 and −12x + 27y = −21",D:"−3x + 8y = 20 and 6x − 16y = 40"},
+   text:`Which system of linear equations has no solution?`},
+  {id:103,type:"free",answer:"462",altAnswers:[],display:"462",
+   text:`Quadratic f(x) has vertex (−7, 14), passes through (−4, −31), and has y-intercept (0, a). The graph of 3f(x) has y-intercept (0, b). What is the positive difference between a and b?`},
+  {id:104,type:"mc",answer:"B",choices:{A:"A: 2(×1), 10(×5), 15(×3), 20(×5), 24(×1)",B:"B: 2(×0), 10(×20), 15(×25), 20(×20), 24(×0)",C:"C: 2(×100), 10(×50), 15(×25), 20(×0), 24(×25)",D:"D: 2(×45), 10(×55), 15(×65), 20(×75), 24(×85)"},
+   text:`Each frequency table represents a data set. Which represents the data set with the smallest standard deviation?`},
+  {id:105,type:"free",answer:"12",altAnswers:[],display:"12",
+   text:`k is a positive constant. The product of solutions is 154. What is the value of k?\n\n(3/5)(5x + 11)(x + √(5k + 10))(x − √(5k + 10)) = 0`},
+  {id:106,type:"mc",answer:"B",choices:{A:"(−14x + 780)°",B:"(−14x + 420)°",C:"180°",D:"(14x − 420)°"},
+   text:`Two lines intersect at one point, forming two acute and two obtuse angles. One angle measures (7x − 210)°. Which of the following could NOT be the sum of any two of these angles?`},
+  {id:107,type:"free",answer:"183",altAnswers:[],display:"183",
+   text:`√(a − x) = 46 − x\n\na is a constant and the equation has exactly one real solution. What is the minimum possible value of 4a?`},
+  {id:108,type:"mc",answer:"D",choices:{A:"2,960c",B:"4,604c",C:"4,850c",D:"25,046c"},
+   text:`Particles A, B, C have masses a, b, c. Mass of A is 4,600% of C. Mass of C is 0.004% of B. Which expression represents a + b in terms of c?`},
+  {id:109,type:"mc",answer:"A",choices:{A:"−9 and −4",B:"−1 and 1",C:"2 and 5",D:"7 and 11"},
+   text:`If (x − 7)/5 = (x − 4)/3, the value x − 4 is between which of the following pairs?`},
+  {id:110,type:"mc",answer:"A",choices:{A:"√2/2",B:"−√2/2",C:"0",D:"√2/3"},
+   text:`Unit circle with center B(0,0). Point A(1,0) and C lie on the circle. Angle ABC = 975π/60 radians. What is the x-coordinate of point C?`},
+  {id:111,type:"mc",answer:"C",choices:{A:"y = 68x + 218",B:"y = 218x + 68",C:"y = 68x + 14",D:"y = 68x + 422"},
+   text:`A handyman charges $218 flat rate for the first 3 hours, then $68 per additional hour. Which equation gives total amount y for x hours, where x > 3?`},
+  {id:112,type:"mc",answer:"D",choices:{A:"P = CV³/√34",B:"P = CV³/√(34P)",C:"P = ∛(34/(C²V⁴))",D:"P = ∛(C²V⁶/34)"},
+   text:`CV³/P = √(PR) relates power P (watts), current C (amperes), voltage V (volts), resistance R (ohms). When R = 34, which correctly expresses P in terms of C and V?`},
+  {id:113,type:"free",answer:"35",altAnswers:[],display:"35",
+   text:`f(x) = x + 7, g(x) = 5x² − kx + 245. If f(x) · g(x) = 5x³ + 1,715, what is the value of k?`},
+  {id:114,type:"mc",answer:"A",choices:{A:"15√2/2",B:"15",C:"15√2",D:"30"},
+   text:`A circle is inscribed inside square ABCD. Diagonal AC has length 30 cm. What is the radius of the circle in cm?`},
+  {id:115,type:"mc",answer:"D",choices:{A:"3x² + 7x + 14a = 0",B:"3x² + 28x + 14a = 0",C:"3x² + 42x + 14a = 0",D:"3x² + 49x + 14a = 0"},
+   text:`Which of the following has x + 2a as a factor where a is a positive integer?`},
+  {id:116,type:"free",answer:"194",altAnswers:[],display:"194",
+   text:`Metal mold: 27 in × 48 in × 180 in. Cost c = v(d), where v = volume in cubic yards, d = cost per cubic yard. If c = $970, what is d? (1 yard = 36 inches)`},
+  {id:117,type:"mc",answer:"C",choices:{A:"3",B:"27/3",C:"25",D:"28"},
+   text:`The expression x²⁷(x−7)/(3x³) + 7x²⁷/(3x³) is equivalent to (1/3)x^k, where k is a constant and x > 0. What is the value of k?`},
+  {id:118,type:"mc",answer:"C",choices:{A:"During a week when Megan runs for 780 minutes, she bikes for 200 minutes.",B:"Each week, Megan swims and bikes for a total of 780 minutes.",C:"During a week when Megan doesn't swim, she runs for 260 minutes.",D:"During a week when Megan doesn't bike, she swims for 390 minutes."},
+   text:`Megan trains 14 hours (840 min)/week. y = 780 − x − 200 represents the situation where she swims x minutes and bikes y minutes. Which statement is true?`},
+  {id:119,type:"mc",answer:"D",choices:{A:"I only",B:"II only",C:"I and II",D:"Neither I nor II"},
+   text:`Functions f(x) = b(0.97)^(x+a) and g(x) = b(0.97)^x + a, with a > b > 0. Which equation displays, as a constant or coefficient, the maximum of the graph when x ≥ 0?\n\nI. f(x) = b(0.97)^(x+a)\nII. g(x) = b(0.97)^x + a`},
+  {id:120,type:"mc",answer:"D",choices:{A:"6√3",B:"24√3",C:"32√3",D:"48√3"},
+   text:`An equilateral triangle is inscribed in a circle with diameter 16. Which of the following gives the area of the equilateral triangle?`},
+  {id:121,type:"free",answer:"1937",altAnswers:["1,937"],display:"1,937",
+   text:`ax² + 88x + c = 0, where a and c are constants, has no real solutions and a factor of kx + j. What is the least possible integer value of ac?`},
+  {id:122,type:"mc",answer:"D",choices:{A:"Every 6 years, balance increases by $2,380.",B:"Every 6 years, balance increases by 7% of previous 6-year balance.",C:"Every 2 months, balance increases by $2,380.",D:"Every 2 months, balance increases by 7% of previous 2-month balance."},
+   text:`f(t) = 34,000(1.07)^(6t) models investment balance t years after opening. What is the best interpretation of (1.07)^(6t)?`},
+  {id:123,type:"free",answer:"196",altAnswers:[],display:"196",
+   text:`The quadratic function a(x + 4.5)² − d can be rewritten as (x − 9.5)(x + c). If a = 1, what is the value of d?`},
+  {id:124,type:"free",answer:"1932",altAnswers:["1,932"],display:"1,932",
+   text:`g(x) is quadratic. The graph passes through (12, 540) and (16, 908). If g(0) = 12, what is the value of g(24)?`},
+  {id:125,type:"free",answer:"48384",altAnswers:["48,384"],display:"48,384",
+   text:`Rectangular prism A: SA = 312 m², volume = 224 m³. Rectangular prism B: SA = 11,232 m². Both are similar. What is the volume of prism B?`},
+  {id:126,type:"mc",answer:"D",choices:{A:"180 − y = x",B:"x = 180 − z",C:"y + z = 180 − x",D:"180 − z = y"},
+   text:`Lines a and b are intersected by line k. Which of the following is sufficient to prove that a and b are parallel?`},
+  {id:127,type:"mc",answer:"C",choices:{A:"7a",B:"6a",C:"−6a",D:"−7a"},
+   text:`f(x) = ax² + bx + c. The graph passes through (13, 0) and (−6, 0). Which of the following is the value of a + b in terms of a?`},
+  {id:128,type:"mc",answer:"C",choices:{A:"7",B:"6",C:"5",D:"4"},
+   text:`f(x) = 1.6^x + 6, g(x) = 1.8x + b. They intersect at (j, k) and (h, r) where r < k. What is the least possible value of b?`},
+  {id:129,type:"free",answer:"52.5",altAnswers:[],display:"52.5",
+   text:`For the given circle with an inscribed angle of 35°, arc abc = (130 + 7x)° and arc acb = (90 − 3x)°. What is the value of x?`},
+  {id:130,type:"mc",answer:"B",choices:{A:"78",B:"61",C:"39",D:"22"},
+   text:`f(x) = 78(0.39)^x. For any positive integer n, f(n) is p% less than f(n − 1). What is the value of p?`},
+  {id:131,type:"free",answer:"9",altAnswers:[],display:"9",
+   text:`For which value of a does the quadratic (7x − 8)² + 9 = a only have one solution?`},
+  {id:132,type:"free",answer:"16",altAnswers:[],display:"16",
+   text:`f(x) = aˣ − b. The exponential function passes through (c, 12) and (2c, 768). What is a possible value of b?`},
+  {id:133,type:"free",answer:"1",altAnswers:[],display:"1",
+   text:`If r = ∛k, for the equation r^(12a−9) = k, what is the value of a for which r and k are equal?`},
+  {id:134,type:"free",answer:"102",altAnswers:[],display:"102",
+   text:`What is the perimeter of an equilateral triangle with an area of 289√3?`},
+  {id:135,type:"free",answer:"93",altAnswers:[],display:"93",
+   text:`92x − 1,789 = kx − 1,790\n\nk is a positive integer greater than 91. The equation has exactly one solution. What is the least possible value of k?`},
+  {id:136,type:"mc",answer:"B",choices:{A:"−13",B:"−12",C:"−6",D:"12"},
+   text:`4x³ + bx² − 528x = 0\n\nb is a positive integer constant. Which value could be a solution to the equation?`},
+  {id:137,type:"mc",answer:"B",choices:{A:"3√3",B:"5√2",C:"5√2 − 3√3",D:"5√2 + 3√3"},
+   text:`Circle A: (x − 18)² + y² = 27. Circle B: (x − 18)² + (y − m)² = 50. If Circle B passes through the center of Circle A, what is a possible value of m?`},
+  {id:138,type:"mc",answer:"B",choices:{A:"k² − 2jm + m²",B:"k² − 2km + m²",C:"4j² − 4jkm + m²",D:"4j² − 2jkm + k²m²"},
+   text:`If x² = j + k and y² = j + m, which of the following is equal to (x² − y²)²?`},
+  {id:139,type:"free",answer:"123",altAnswers:[],display:"123",
+   text:`−x² + kx − 3,786\n\nk is a positive integer. If the equation has no real solution, what is the greatest possible value of k?`},
+  {id:140,type:"free",answer:"-131",altAnswers:[],display:"−131",
+   text:`A circle with center (−7, −4) has radius 14. The equation x² + y² + ax + by + c = 0 represents the circle. What is the value of c?`},
+  {id:141,type:"free",answer:"10/3",altAnswers:["3.333","3.33"],display:"10/3 ≈ 3.333",
+   text:`In △ABC, ∠C is a right angle. D lies on AB, E lies on BC, DE ∥ AC. AB = 39, DE = 8, AC > BC, area = 270. What is the length of BE in units?`},
+  {id:142,type:"mc",answer:"C",choices:{A:"(x + k)²",B:"(x − k)²",C:"(x − k)(x + k)",D:"x² − kx − k²"},
+   text:`If k = l + m, which of the following is equivalent to x² − l² − 2lm − m²?`},
+  {id:143,type:"free",answer:"5476",altAnswers:["5,476"],display:"5,476",
+   text:`ax² + 148x + c, where a and c are positive constants. If jx + k is a factor (j, k positive constants), what is the greatest possible value of ac?`},
+  {id:144,type:"mc",answer:"C",choices:{A:"(7 + m, 7)",B:"(2m, 8)",C:"(7 + 2m, 4)",D:"(7 − 3m, 3)"},
+   text:`Lines c and d are perpendicular. Line c: y = mx + b. They intersect at (7, 6). Which point lies on line d?`},
+  {id:145,type:"free",answer:"14",altAnswers:[],display:"14",
+   text:`54x⁴ + 219x² + 105 has factors in the form (k)(ax² + b)(cx² + d), where a, b, c, d, k are integers. What is the smallest possible value of ab?`},
+  {id:146,type:"free",answer:"-15",altAnswers:[],display:"−15",
+   text:`What is the value of k if the given equation only has one solution?\n\n(1/4)|x − 4| − 30 = 2k`},
+  {id:147,type:"mc",answer:"B",choices:{A:"39x + 17y = 10 and ax − 3by = 10",B:"52x + 34y = 10 and 2ax + 4by = 10",C:"65x + 17y = 10 and 5ax + by = 10",D:"13x − 17y = 10 and ax + by = 10"},
+   text:`The pair 13x + 17y = 10 and ax + by = 10 are perpendicular lines. Which of the following pairs also represents perpendicular lines?`},
+  {id:148,type:"mc",answer:"D",choices:{A:"c = d + e + f",B:"c = def/(d+e+f)",C:"c = (d+e+f)/def",D:"c = def/(de+df+ef)"},
+   text:`Which equation correctly gives c in terms of d, e, and f?\n\n73/c = 73/d + 73/e + 73/f`},
+  {id:149,type:"mc",answer:"B",choices:{A:"f(x) = 3(4)(4)^(x+1)",B:"f(x) = 3,072(4)(4)^(x−4)",C:"f(x) = 12(4)(4)^x",D:"f(x) = 768(4)(4)^(x−3)"},
+   text:`For the exponential function f, the value of f(3) is k. Which equivalent form shows the value of k as the coefficient or the base?`},
+  {id:150,type:"free",answer:"32.67",altAnswers:[],display:"32.67",
+   text:`A rocket's speed is increasing at 14.6 m/s². What is the rate in miles per minute squared? (1 mile = 1,609 meters)`}
+];
+
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+const state = {
+  results: {},
+  revealed: {},
+  times: {},
+  wrongChoices: {},  // id -> choice letter that was wrong
+  everWrong: {},     // id -> true if ever answered incorrectly on first attempt
+  currentId: null,
+  timerSecs: 0,
+  timerInterval: null
+};
+
+// ══════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════
+function showPage(name) {
+  ['home','bank','qpage','formulas','analytics','login','leaderboard'].forEach(p => {
+    const el = document.getElementById(p);
+    if (el) { el.style.display = 'none'; el.classList.remove('active'); }
+  });
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  const page = document.getElementById(name);
+  if (!page) return;
+  page.style.display = (name === 'home' || name === 'login') ? 'flex' : 'block';
+  page.classList.add('active');
+  const navEl = document.getElementById('nav-' + name);
+  if (navEl) navEl.classList.add('active');
+  if (name !== 'qpage') stopTimer();
+  if (name === 'bank') renderBankGrid();
+  if (name === 'formulas') renderFormulaGrid();
+  if (name === 'analytics') renderAnalytics();
+  if (name === 'leaderboard') loadLeaderboard();
+  if (name === 'login') renderAuthForm();
+  if (name === 'home') document.getElementById('score-panel').classList.remove('visible');
+}
+
+function goBackToBank() {
+  stopTimer();
+  closeQPanel();
+  showPage('bank');
+}
+
+function renderBankGrid() {
+  const grid = document.getElementById('bank-grid');
+  if (!grid) return;
+  const answered = Object.keys(state.results).length;
+  const correct = Object.values(state.results).filter(v => v === 'correct').length;
+  document.getElementById('bank-meta').textContent = `${answered} / 150 answered · ${correct} correct`;
+  grid.innerHTML = '';
+  QUESTIONS.forEach(q => {
+    const res = state.results[q.id] || '';
+    const box = document.createElement('div');
+    box.className = `bank-box${res ? ' ' + res : ''}`;
+    box.textContent = q.id;
+    box.addEventListener('click', () => openQuestion(q.id));
+    grid.appendChild(box);
+  });
+  updateScorePanel();
+}
+
+function openQuestion(id) {
+  state.currentId = id;
+  // Clear revealed so re-entering doesn't show the answer
+  delete state.revealed[id];
+  showPage('qpage');
+  renderQuestionPage(id);
+  renderMiniGrid();
+  startTimer();
+}
+
+function renderQuestionPage(id) {
+  const q = QUESTIONS.find(x => x.id === id);
+  if (!q) return;
+  const res = state.results[id];
+  const revealed = state.revealed[id] || false;
+  document.getElementById('qp-num').textContent = `Question ${id} of 150`;
+  const container = document.getElementById('qp-question');
+  container.innerHTML = '';
+
+  // Question text
+  const textEl = document.createElement('div');
+  textEl.className = 'qp-q-text';
+  textEl.innerHTML = escHtml(q.text);
+  container.appendChild(textEl);
+
+  if (q.type === 'mc') {
+    const choicesWrap = document.createElement('div');
+    choicesWrap.className = 'qp-choices';
+    Object.entries(q.choices).forEach(([l, txt]) => {
+      const btn = document.createElement('button');
+      btn.className = 'qp-choice-btn';
+      if (res === 'correct') {
+        // Locked but NO green highlight on re-entry — clean slate
+        btn.disabled = true;
+      } else if (res === 'wrong') {
+        // Only mark the previously wrong pick red — keep all active for retry
+        if (l === state.wrongChoices[id]) btn.classList.add('wrong-ans');
+        if (revealed && l === q.answer) btn.classList.add('correct-ans');
+      }
+      btn.innerHTML = `<span class="qp-choice-letter">${l}</span><span>${escInline(txt)}</span>`;
+      btn.addEventListener('click', () => submitQpMC(id, l));
+      choicesWrap.appendChild(btn);
+    });
+    container.appendChild(choicesWrap);
+  } else {
+    const wrap = document.createElement('div');
+    wrap.className = 'qp-free-wrap';
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'qp-free-input';
+    input.id = `qp-fi-${id}`;
+    if (res === 'correct') {
+      input.className = 'qp-free-input correct';
+      input.value = '';          // ← don't show the answer
+      input.disabled = true;
+      input.placeholder = '✓ Correct';
+    } else if (res === 'wrong') {
+      input.className = 'qp-free-input wrong';
+      input.placeholder = 'Try again…';
+    } else {
+      input.placeholder = 'Type your answer…';
+    }
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') submitQpFree(id); });
+    const submitBtn = document.createElement('button');
+    submitBtn.className = 'qp-submit-btn';
+    submitBtn.textContent = 'Submit';
+    if (res === 'correct') submitBtn.disabled = true;
+    submitBtn.addEventListener('click', () => submitQpFree(id));
+    wrap.appendChild(input);
+    wrap.appendChild(submitBtn);
+    container.appendChild(wrap);
+  }
+
+  // Feedback bar — only show persistent state, not full answer
+  const fb = document.createElement('div');
+  fb.id = `qp-fb-${id}`;
+  if (res === 'correct') {
+    fb.className = 'qp-feedback correct';
+    fb.textContent = '✓ Correct!';
+  } else if (res === 'wrong') {
+    fb.className = 'qp-feedback wrong';
+    fb.textContent = '✗ Incorrect. Try again or reveal the answer.';
+  } else {
+    fb.className = 'qp-feedback'; // hidden
+  }
+  container.appendChild(fb);
+
+  // Show answer button + reveal (wrong only)
+  if (res === 'wrong') {
+    if (!revealed) {
+      const showBtn = document.createElement('button');
+      showBtn.className = 'qp-show-answer-btn';
+      showBtn.textContent = 'Show Answer';
+      showBtn.addEventListener('click', () => revealQpAnswer(id, showBtn));
+      container.appendChild(showBtn);
+    }
+    const revealDiv = document.createElement('div');
+    revealDiv.className = `qp-answer-reveal${revealed ? ' visible' : ''}`;
+    revealDiv.id = `qp-ar-${id}`;
+    revealDiv.textContent = `Correct answer: ${q.display || q.answer}`;
+    container.appendChild(revealDiv);
+    if (revealed && q.type === 'mc') {
+      container.querySelectorAll('.qp-choice-btn').forEach(b => {
+        if (b.querySelector('.qp-choice-letter').textContent.trim() === q.answer)
+          b.classList.add('correct-ans');
+      });
+    }
+  }
+
+  const info = document.getElementById('qp-progress-info');
+  if (info) info.textContent = `${Object.keys(state.results).length} / 150 answered`;
+
+  const currentIdx = QUESTIONS.findIndex(q => q.id === id);
+  const prevBtn = document.getElementById('qp-prev');
+  const nextBtn = document.querySelector('.qp-next');
+  if (prevBtn) prevBtn.disabled = currentIdx === 0;
+  if (nextBtn) nextBtn.textContent = currentIdx === QUESTIONS.length - 1 ? 'Back to Bank' : 'Next →';
+}
+
+function submitQpMC(id, choice) {
+  if (state.results[id] === 'correct') return; // locked only if already correct
+  const q = QUESTIONS.find(x => x.id === id);
+  const correct = choice === q.answer;
+  state.results[id] = correct ? 'correct' : 'wrong';
+
+  if (!correct) {
+    state.wrongChoices[id] = choice;
+    state.everWrong[id] = true;
+    // Reset all button styles then mark just the wrong one
+    document.querySelectorAll('.qp-choice-btn').forEach(btn => {
+      btn.classList.remove('wrong-ans', 'correct-ans');
+      const letter = btn.querySelector('.qp-choice-letter').textContent.trim();
+      if (letter === choice) btn.classList.add('wrong-ans');
+    });
+  } else {
+    // Lock everything and show correct answer in feedback
+    document.querySelectorAll('.qp-choice-btn').forEach(btn => {
+      btn.disabled = true;
+      btn.classList.remove('wrong-ans', 'correct-ans');
+      const letter = btn.querySelector('.qp-choice-letter').textContent.trim();
+      if (letter === q.answer) btn.classList.add('correct-ans');
+    });
+  }
+
+  const fb = document.getElementById(`qp-fb-${id}`);
+  if (fb) {
+    fb.className = `qp-feedback ${correct ? 'correct' : 'wrong'}`;
+    fb.textContent = correct
+      ? `✓ Correct! Answer: ${q.display || q.answer}`
+      : '✗ Incorrect. Try again or reveal the answer.';
+  }
+
+  // Remove old show-answer btn/reveal if retrying
+  const oldShowBtn = document.querySelector('.qp-show-answer-btn');
+  const oldReveal = document.getElementById(`qp-ar-${id}`);
+  if (!correct) {
+    if (!oldShowBtn && !oldReveal) appendShowAnswerBtn(id, q);
+  }
+
+  state.times[id] = state.timerSecs;
+  saveState();
+  updateScorePanel();
+  renderMiniGrid();
+  debouncedCloudSync();
+}
+
+function submitQpFree(id) {
+  if (state.results[id] === 'correct') return; // locked only if already correct
+  const q = QUESTIONS.find(x => x.id === id);
+  const input = document.getElementById(`qp-fi-${id}`);
+  if (!input || input.disabled || !input.value.trim()) return;
+  const correct = checkFreeAnswer(input.value.trim(), q);
+  state.results[id] = correct ? 'correct' : 'wrong';
+
+  if (correct) {
+    input.disabled = true;
+    input.className = 'qp-free-input correct';
+    input.value = '';
+    input.placeholder = '✓ Correct';
+    const sb = input.parentElement.querySelector('.qp-submit-btn');
+    if (sb) sb.disabled = true;
+  } else {
+    // Keep input active for retry — flash red then clear style
+    state.everWrong[id] = true;
+    input.className = 'qp-free-input wrong';
+    input.select();
+    setTimeout(() => {
+      if (input.className.includes('wrong')) input.className = 'qp-free-input';
+    }, 1200);
+  }
+
+  const fb = document.getElementById(`qp-fb-${id}`);
+  if (fb) {
+    fb.className = `qp-feedback ${correct ? 'correct' : 'wrong'}`;
+    fb.textContent = correct
+      ? `✓ Correct! Answer: ${q.display || q.answer}`
+      : '✗ Incorrect. Try again or reveal the answer.';
+  }
+
+  if (!correct) {
+    const oldShowBtn = document.querySelector('.qp-show-answer-btn');
+    const oldReveal = document.getElementById(`qp-ar-${id}`);
+    if (!oldShowBtn && !oldReveal) appendShowAnswerBtn(id, q);
+  }
+
+  state.times[id] = state.timerSecs;
+  saveState();
+  updateScorePanel();
+  renderMiniGrid();
+  debouncedCloudSync();
+}
+
+function appendShowAnswerBtn(id, q) {
+  const container = document.getElementById('qp-question');
+  const showBtn = document.createElement('button');
+  showBtn.className = 'qp-show-answer-btn';
+  showBtn.textContent = 'Show Answer';
+  showBtn.addEventListener('click', () => revealQpAnswer(id, showBtn));
+  const revealDiv = document.createElement('div');
+  revealDiv.className = 'qp-answer-reveal';
+  revealDiv.id = `qp-ar-${id}`;
+  revealDiv.textContent = `Correct answer: ${q.display || q.answer}`;
+  container.appendChild(showBtn);
+  container.appendChild(revealDiv);
+}
+
+function revealQpAnswer(id, btn) {
+  state.revealed[id] = true;
+  const reveal = document.getElementById(`qp-ar-${id}`);
+  if (reveal) reveal.classList.add('visible');
+  if (btn) btn.style.display = 'none';
+  const q = QUESTIONS.find(x => x.id === id);
+  if (q && q.type === 'mc') {
+    document.querySelectorAll('.qp-choice-btn').forEach(b => {
+      if (b.querySelector('.qp-choice-letter').textContent.trim() === q.answer)
+        b.classList.add('correct-ans');
+    });
+  }
+}
+
+function goPrevQuestion() {
+  const currentIdx = QUESTIONS.findIndex(q => q.id === state.currentId);
+  if (currentIdx <= 0) return;
+  stopTimer();
+  openQuestion(QUESTIONS[currentIdx - 1].id);
+}
+
+function goNextQuestion() {
+  const currentIdx = QUESTIONS.findIndex(q => q.id === state.currentId);
+  if (currentIdx + 1 >= QUESTIONS.length) { goBackToBank(); return; }
+  stopTimer();
+  openQuestion(QUESTIONS[currentIdx + 1].id);
+}
+
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light');
+  document.getElementById('theme-toggle').textContent = isLight ? '●' : '◐';
+  try { localStorage.setItem('defxny_theme', isLight ? 'light' : 'dark'); } catch(e) {}
+}
+
+function loadTheme() {
+  try {
+    const saved = localStorage.getItem('defxny_theme');
+    if (saved === 'light') {
+      document.body.classList.add('light');
+      const btn = document.getElementById('theme-toggle');
+      if (btn) btn.textContent = '●';
+    }
+  } catch(e) {}
+}
+
+function toggleQPanel() {
+  document.getElementById('qp-mini-panel').classList.toggle('open');
+}
+function closeQPanel() {
+  const p = document.getElementById('qp-mini-panel');
+  if (p) p.classList.remove('open');
+}
+
+function renderMiniGrid() {
+  const grid = document.getElementById('qp-mini-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  QUESTIONS.forEach(q => {
+    const res = state.results[q.id] || '';
+    const isCurrent = q.id === state.currentId;
+    const box = document.createElement('div');
+    box.className = `mini-box${res ? ' ' + res : ''}${isCurrent ? ' current' : ''}`;
+    box.textContent = q.id;
+    box.addEventListener('click', () => { closeQPanel(); stopTimer(); openQuestion(q.id); });
+    grid.appendChild(box);
+  });
+}
+
+function startTimer() {
+  state.timerSecs = 0;
+  updateTimerDisplay();
+  clearInterval(state.timerInterval);
+  state.timerInterval = setInterval(() => { state.timerSecs++; updateTimerDisplay(); }, 1000);
+}
+function stopTimer() { clearInterval(state.timerInterval); state.timerInterval = null; }
+function updateTimerDisplay() {
+  const el = document.getElementById('qp-timer');
+  if (!el) return;
+  const m = Math.floor(state.timerSecs / 60);
+  const s = state.timerSecs % 60;
+  el.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+}
+
+function checkFreeAnswer(val, q) {
+  const normalize = s => s.toString().replace(/,/g,'').replace(/\s/g,'').toLowerCase().replace(/−/g,'-');
+  const userVal = normalize(val);
+  if (userVal === normalize(q.answer)) return true;
+  if (q.altAnswers) { for (const alt of q.altAnswers) { if (userVal === normalize(alt)) return true; } }
+  const vNum = parseFloat(val.replace(/,/g,''));
+  const aNum = parseFloat(q.answer.replace(/,/g,''));
+  if (!isNaN(vNum) && !isNaN(aNum) && Math.abs(vNum - aNum) < 0.015) return true;
+  if (val.includes('/')) {
+    const [a,b] = val.split('/');
+    const frac = parseFloat(a)/parseFloat(b);
+    if (!isNaN(frac) && !isNaN(aNum) && Math.abs(frac-aNum)<0.015) return true;
+  }
+  if (q.answer.includes('/')) {
+    const [a,b] = q.answer.split('/');
+    const frac = parseFloat(a)/parseFloat(b);
+    if (!isNaN(frac) && !isNaN(vNum) && Math.abs(vNum-frac)<0.015) return true;
+  }
+  return false;
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+function escInline(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function escAttr(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ══════════════════════════════════════════════
+// ANALYTICS
+// ══════════════════════════════════════════════
+function renderAnalytics() {
+  const body = document.getElementById('an-body');
+  const empty = document.getElementById('an-empty');
+  const answered = Object.keys(state.results).length;
+
+  if (answered === 0) {
+    body.innerHTML = `<div class="an-empty">No data yet — start answering questions to see your analytics.</div>`;
+    return;
+  }
+
+  const results = state.results;
+  const times = state.times;
+  const correct = Object.values(results).filter(v => v === 'correct').length;
+  const wrong = Object.values(results).filter(v => v === 'wrong').length;
+  const accuracy = Math.round(correct / answered * 100);
+
+  // Average time
+  const timesArr = Object.values(times).filter(t => typeof t === 'number');
+  const avgTime = timesArr.length ? Math.round(timesArr.reduce((a,b)=>a+b,0) / timesArr.length) : 0;
+  const avgMin = Math.floor(avgTime/60);
+  const avgSec = avgTime % 60;
+
+  // Fastest & slowest
+  const timedIds = Object.keys(times).filter(id => typeof times[id] === 'number');
+  timedIds.sort((a,b) => times[a]-times[b]);
+  const fastestIds = timedIds.slice(0,5);
+  const slowestIds = timedIds.slice(-5).reverse();
+
+  // MC vs Free stats
+  const mcIds = QUESTIONS.filter(q=>q.type==='mc').map(q=>q.id);
+  const freeIds = QUESTIONS.filter(q=>q.type==='free').map(q=>q.id);
+  const mcAnswered = mcIds.filter(id=>results[id]).length;
+  const mcCorrect = mcIds.filter(id=>results[id]==='correct').length;
+  const freeAnswered = freeIds.filter(id=>results[id]).length;
+  const freeCorrect = freeIds.filter(id=>results[id]==='correct').length;
+  const mcAcc = mcAnswered ? Math.round(mcCorrect/mcAnswered*100) : 0;
+  const freeAcc = freeAnswered ? Math.round(freeCorrect/freeAnswered*100) : 0;
+
+  // All answered questions sorted by time desc (slowest first)
+  const allTimed = timedIds.map(id => ({
+    id: parseInt(id),
+    time: times[id],
+    result: results[id]
+  })).sort((a,b) => b.time - a.time);
+
+  const maxTime = allTimed.length ? allTimed[0].time : 1;
+
+  function fmt(secs) {
+    const m = Math.floor(secs/60), s = secs%60;
+    return `${m}:${String(s).padStart(2,'0')}`;
+  }
+
+  // Questions that were ever answered wrong (first attempt or later), sorted by number
+  const mistakeIds = Object.keys(state.everWrong)
+    .filter(id => state.everWrong[id])
+    .map(id => parseInt(id))
+    .sort((a,b) => a - b);
+
+  body.innerHTML = `
+    <!-- Stat cards -->
+    <div class="an-cards">
+      <div class="an-card">
+        <div class="an-card-val white">${answered}</div>
+        <div class="an-card-label">Answered</div>
+      </div>
+      <div class="an-card">
+        <div class="an-card-val green">${correct}</div>
+        <div class="an-card-label">Correct</div>
+      </div>
+      <div class="an-card">
+        <div class="an-card-val red">${wrong}</div>
+        <div class="an-card-label">Wrong</div>
+      </div>
+      <div class="an-card">
+        <div class="an-card-val ${accuracy>=70?'green':accuracy>=50?'white':'red'}">${accuracy}%</div>
+        <div class="an-card-label">Accuracy</div>
+      </div>
+      <div class="an-card">
+        <div class="an-card-val white">${avgMin}:${String(avgSec).padStart(2,'0')}</div>
+        <div class="an-card-label">Avg Time</div>
+      </div>
+      <div class="an-card">
+        <div class="an-card-val white">${150-answered}</div>
+        <div class="an-card-label">Remaining</div>
+      </div>
+    </div>
+
+    <!-- Accuracy bar -->
+    <div class="an-section-title">Overall Accuracy</div>
+    <div class="an-acc-bar-wrap">
+      <div class="an-acc-bar-fill" style="width:${accuracy}%"></div>
+    </div>
+    <div class="an-acc-label">${correct} correct out of ${answered} answered (${150-answered} not yet attempted)</div>
+
+    <!-- MC vs Free -->
+    <div class="an-section-title">By Question Type</div>
+    <div class="an-type-row">
+      <div class="an-type-block">
+        <div class="an-type-label">Multiple Choice</div>
+        <div class="an-type-stat" style="color:${mcAcc>=70?'#22c55e':mcAcc>=50?'#f5f5f0':'#ef4444'}">${mcAcc}%</div>
+        <div class="an-type-sub">${mcCorrect} / ${mcAnswered} answered correctly</div>
+      </div>
+      <div class="an-type-block">
+        <div class="an-type-label">Free Response</div>
+        <div class="an-type-stat" style="color:${freeAcc>=70?'#22c55e':freeAcc>=50?'#f5f5f0':'#ef4444'}">${freeAcc}%</div>
+        <div class="an-type-sub">${freeCorrect} / ${freeAnswered} answered correctly</div>
+      </div>
+    </div>
+
+    <!-- Review Mistakes -->
+    ${mistakeIds.length > 0 ? `
+    <div class="an-section-title">Review Mistakes <span style="opacity:0.6;font-weight:400;">— questions you got wrong on a first attempt</span></div>
+    <div class="an-mistake-grid">
+      ${mistakeIds.map(id => {
+        const r = results[id]; // current status: 'correct' (fixed) or 'wrong' (still wrong)
+        const stillWrong = r === 'wrong';
+        return `<div class="an-mistake-box ${stillWrong ? 'still-wrong' : 'fixed'}" onclick="openQuestion(${id})" title="${stillWrong ? 'Still incorrect' : 'Now answered correctly'}">
+          ${id}
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="an-mistake-legend">
+      <span class="legend-item sm"><span class="legend-dot wrong"></span>Still incorrect</span>
+      <span class="legend-item sm"><span class="legend-dot correct"></span>Now correct (fixed)</span>
+    </div>
+    ` : ''}
+
+    <!-- Slowest 5 -->
+    ${allTimed.length >= 1 ? `
+    <div class="an-section-title">Your Slowest Questions</div>
+    ${slowestIds.slice(0,5).map(id => {
+      const t = times[id]; const r = results[id];
+      const pct = Math.round(t/maxTime*100);
+      return `<div class="an-slow-bar">
+        <span class="an-slow-num" style="cursor:pointer;color:var(--white)" onclick="openQuestion(${id})">${id}</span>
+        <div class="an-slow-bar-track"><div class="an-slow-bar-fill ${r}" style="width:${pct}%"></div></div>
+        <span class="an-slow-label">${fmt(t)}</span>
+        <span class="an-res-badge ${r}" style="margin-left:8px">${r}</span>
+      </div>`;
+    }).join('')}` : ''}
+
+    <!-- Full table -->
+    <div class="an-section-title">All Answered Questions</div>
+    <div class="an-table-wrap">
+      <table class="an-time-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Preview</th>
+            <th>Result</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${allTimed.map(({id, time, result}) => {
+            const q = QUESTIONS.find(x=>x.id===id);
+            const preview = q ? q.text.replace(/\n/g,' ').substring(0,55)+'…' : '';
+            return `<tr onclick="openQuestion(${id})" title="Click to open question ${id}">
+              <td style="color:var(--white);font-weight:500">${id}</td>
+              <td style="color:var(--gray-3);max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escInline(preview)}</td>
+              <td><span class="an-res-badge ${result}">${result}</span></td>
+              <td>${fmt(time)}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+// ══════════════════════════════════════════════
+// PERSISTENCE
+// ══════════════════════════════════════════════
+const STORAGE_KEY = 'defxny_sat_state';
+
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      results: state.results,
+      revealed: state.revealed,
+      times: state.times,
+      wrongChoices: state.wrongChoices,
+      everWrong: state.everWrong
+    }));
+  } catch(e) {}
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    if (saved.results) state.results = saved.results;
+    if (saved.revealed) state.revealed = saved.revealed;
+    if (saved.times) state.times = saved.times;
+    if (saved.wrongChoices) state.wrongChoices = saved.wrongChoices;
+    if (saved.everWrong) state.everWrong = saved.everWrong;
+  } catch(e) {}
+}
+
+function handleResetClick() {
+  const btn = document.getElementById('reset-btn');
+  if (!btn) return;
+  if (btn.dataset.confirming === 'true') {
+    clearState();
+    btn.textContent = 'Reset Progress';
+    btn.dataset.confirming = 'false';
+    btn.classList.remove('confirming');
+    clearTimeout(btn._resetTimeout);
+  } else {
+    btn.textContent = 'Click again to confirm';
+    btn.dataset.confirming = 'true';
+    btn.classList.add('confirming');
+    clearTimeout(btn._resetTimeout);
+    btn._resetTimeout = setTimeout(() => {
+      btn.textContent = 'Reset Progress';
+      btn.dataset.confirming = 'false';
+      btn.classList.remove('confirming');
+    }, 3000);
+  }
+}
+
+function clearState() {
+  state.results = {};
+  state.revealed = {};
+  state.times = {};
+  state.wrongChoices = {};
+  state.everWrong = {};
+  saveState();
+  renderBankGrid();
+  renderAnalytics();
+  updateScorePanel();
+  const panel = document.getElementById('score-panel');
+  if (panel) panel.classList.remove('visible');
+}
+
+function updateScorePanel() {
+  const vals = Object.values(state.results);
+  const correct = vals.filter(v=>v==='correct').length;
+  const wrong = vals.filter(v=>v==='wrong').length;
+  const total = vals.length;
+  const panel = document.getElementById('score-panel');
+  if (!panel) return;
+  if (total > 0) {
+    panel.classList.add('visible');
+    const sc = document.getElementById('sc-correct');
+    const sw = document.getElementById('sc-wrong');
+    sc.textContent = correct; sc.className = 'green';
+    sw.textContent = wrong; sw.className = 'red';
+    document.getElementById('sc-pct').textContent = Math.round(correct/total*100)+'%';
+  } else {
+    panel.classList.remove('visible');
+  }
+}
+
+// ══════════════════════════════════════════════
+// AUTH — username + password via Supabase
+// We use a "shadow email" trick: username@defxny.local
+// so Supabase Auth (which requires email) works with just a username.
+// ══════════════════════════════════════════════
+const AUTH_STORAGE_KEY = 'defxny_auth_user';
+
+function usernameToEmail(username) {
+  return username.trim().toLowerCase().replace(/[^a-z0-9_]/g, '') + '@defxny.local';
+}
+
+function toggleAuthMode() {
+  authMode = authMode === 'signin' ? 'signup' : 'signin';
+  renderAuthForm();
+}
+
+function renderAuthForm() {
+  const title = document.getElementById('login-title');
+  const btn = document.getElementById('login-submit-btn');
+  const switchEl = document.getElementById('login-switch');
+  const err = document.getElementById('login-error');
+  err.classList.remove('show');
+  if (authMode === 'signin') {
+    title.textContent = 'Welcome back';
+    btn.textContent = 'Sign In';
+    switchEl.innerHTML = `Don't have an account? <a onclick="toggleAuthMode()">Sign up</a>`;
+  } else {
+    title.textContent = 'Create your account';
+    btn.textContent = 'Sign Up';
+    switchEl.innerHTML = `Already have an account? <a onclick="toggleAuthMode()">Sign in</a>`;
+  }
+}
+
+function showLoginError(msg) {
+  const err = document.getElementById('login-error');
+  err.textContent = msg;
+  err.classList.add('show');
+}
+
+async function handleAuthSubmit() {
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value;
+  const btn = document.getElementById('login-submit-btn');
+  const err = document.getElementById('login-error');
+  err.classList.remove('show');
+
+  if (!username || username.length < 3) return showLoginError('Username must be at least 3 characters.');
+  if (!password || password.length < 6) return showLoginError('Password must be at least 6 characters.');
+  if (!supabaseClient) return showLoginError('Leaderboard not configured yet — ask the site owner to finish setup.');
+
+  btn.disabled = true;
+  btn.textContent = authMode === 'signin' ? 'Signing in…' : 'Creating account…';
+
+  const email = usernameToEmail(username);
+
+  try {
+    if (authMode === 'signup') {
+      const { data, error } = await supabaseClient.auth.signUp({ email, password });
+      if (error) throw error;
+      // Store username in profiles table
+      const userId = data.user?.id;
+      if (userId) {
+        await supabaseClient.from('profiles').upsert({ id: userId, username: username });
+      }
+      currentUser = { id: userId, username };
+    } else {
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      currentUser = { id: data.user.id, username };
+      // Make sure profile exists (in case it was created elsewhere)
+      await supabaseClient.from('profiles').upsert({ id: data.user.id, username: username });
+    }
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(currentUser));
+    onLoginSuccess();
+  } catch (e) {
+    let msg = e.message || 'Something went wrong.';
+    if (msg.includes('Invalid login credentials')) msg = 'Wrong username or password.';
+    if (msg.includes('already registered')) msg = 'That username is already taken.';
+    showLoginError(msg);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = authMode === 'signin' ? 'Sign In' : 'Sign Up';
+  }
+}
+
+function continueAsGuest() {
+  currentUser = null;
+  localStorage.removeItem(AUTH_STORAGE_KEY);
+  renderUserArea();
+  showPage('home');
+}
+
+function onLoginSuccess() {
+  renderUserArea();
+  syncProgressToCloud();
+  showPage('home');
+}
+
+async function logout() {
+  if (supabaseClient) {
+    try { await supabaseClient.auth.signOut(); } catch(e) {}
+  }
+  currentUser = null;
+  localStorage.removeItem(AUTH_STORAGE_KEY);
+  renderUserArea();
+  showPage('home');
+}
+
+function renderUserArea() {
+  const area = document.getElementById('nav-user-area');
+  const themeBtn = document.getElementById('theme-toggle');
+  if (currentUser) {
+    area.innerHTML = `
+      <span class="user-badge">Signed in as <span class="user-name">${escInline(currentUser.username)}</span></span>
+      <button class="logout-btn" onclick="logout()">Log out</button>
+    `;
+    area.appendChild(themeBtn);
+  } else {
+    area.innerHTML = `<a onclick="showPage('login')" style="font-family:var(--mono);font-size:11px;letter-spacing:0.08em;color:var(--text3);cursor:pointer;text-decoration:underline;">Sign in</a>`;
+    area.appendChild(themeBtn);
+  }
+}
+
+async function tryRestoreSession() {
+  try {
+    const raw = localStorage.getItem(AUTH_STORAGE_KEY);
+    if (!raw || !supabaseClient) return;
+    const saved = JSON.parse(raw);
+    const { data } = await supabaseClient.auth.getSession();
+    if (data?.session?.user) {
+      currentUser = { id: data.session.user.id, username: saved.username };
+    }
+  } catch(e) {}
+  renderUserArea();
+}
+
+// ══════════════════════════════════════════════
+// CLOUD SYNC — push local progress to Supabase for leaderboard
+// ══════════════════════════════════════════════
+let _cloudSyncTimeout = null;
+function debouncedCloudSync() {
+  if (!currentUser || !supabaseClient) return;
+  clearTimeout(_cloudSyncTimeout);
+  _cloudSyncTimeout = setTimeout(() => { syncProgressToCloud(); }, 1500);
+}
+
+async function syncProgressToCloud() {
+  if (!currentUser || !supabaseClient) return;
+  const vals = Object.values(state.results);
+  const correct = vals.filter(v => v === 'correct').length;
+  const total = vals.length;
+  const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+  try {
+    await supabaseClient.from('leaderboard').upsert({
+      user_id: currentUser.id,
+      username: currentUser.username,
+      total_answered: total,
+      total_correct: correct,
+      accuracy: accuracy,
+      updated_at: new Date().toISOString()
+    });
+  } catch (e) {
+    console.error('Cloud sync failed', e);
+  }
+}
+
+// ══════════════════════════════════════════════
+// LEADERBOARD
+// ══════════════════════════════════════════════
+async function loadLeaderboard() {
+  const content = document.getElementById('lb-content');
+  if (!supabaseClient) {
+    content.innerHTML = `<div class="lb-empty">Leaderboard isn't set up yet. Once Supabase is configured, friends who sign in will appear here.</div>`;
+    return;
+  }
+  content.innerHTML = `<div class="lb-empty">Loading leaderboard…</div>`;
+
+  try {
+    const { data, error } = await supabaseClient
+      .from('leaderboard')
+      .select('username, total_answered, total_correct, accuracy')
+      .order('accuracy', { ascending: false })
+      .order('total_answered', { ascending: false })
+      .limit(50);
+
+    if (error) throw error;
+    if (!data || data.length === 0) {
+      content.innerHTML = `<div class="lb-empty">No one has answered any questions yet — be the first!</div>`;
+      return;
+    }
+
+    const rankClass = (i) => i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+
+    content.innerHTML = `
+      <table class="lb-table">
+        <thead>
+          <tr><th>Rank</th><th>Username</th><th>Answered</th><th>Accuracy</th></tr>
+        </thead>
+        <tbody>
+          ${data.map((row, i) => `
+            <tr class="${currentUser && row.username === currentUser.username ? 'is-you' : ''}">
+              <td class="lb-rank ${rankClass(i)}">#${i+1}</td>
+              <td>${escInline(row.username)}${currentUser && row.username === currentUser.username ? ' (you)' : ''}</td>
+              <td>${row.total_answered} / 150</td>
+              <td class="lb-acc">${row.accuracy}%</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+  } catch (e) {
+    content.innerHTML = `<div class="lb-empty">Couldn't load the leaderboard. Try refreshing.</div>`;
+    console.error(e);
+  }
+}
+
+
+
+
+
+// ══════════════════════════════════════════════
+// FORMULA DATA — key formula per question
+// ══════════════════════════════════════════════
+const FORMULAS = [
+  {id:1, topic:"Quadratic Roots & Vertex", formula:"Vertex x = (r₁ + r₂) / 2\nIf roots are −7 and c, vertex x = (c − 7) / 2", tip:"Set vertex x equal to given value and solve for the unknown root."},
+  {id:2, topic:"Complementary Trig Identity", formula:"cos(A) = sin(B)  ⟹  A + B = 90°", tip:"If cos A = sin B, the two angles are complementary. Set their sum equal to 90 and solve."},
+  {id:3, topic:"Linear Revenue Model", formula:"Revenue = (price per unit) × (units)\nFirst month is different: R = 95mn + 55n", tip:"Factor out n (athletes) from the expression for each athlete's cost."},
+  {id:4, topic:"Tangent Line to Parabola", formula:"System has exactly one solution ⟹ discriminant = 0\nb² − 4ac = 0", tip:"Substitute the line into the parabola, collect terms, set discriminant to zero."},
+  {id:5, topic:"Function Transformation", formula:"If (x₀, 0) is on f(x) − k, then f(x₀) = k\nShift: f(x) + 20 = original + 20", tip:"Use the given point to find b, then add 20 to the constant."},
+  {id:6, topic:"Percentage Chain", formula:"a = 4.80b\na = 0.70c  ⟹  c = a / 0.70\np = (c / b) × 100", tip:"Express all quantities in terms of b, then find the ratio c/b as a percentage."},
+  {id:7, topic:"Exponential Function & System", formula:"f(x) = aˣ − b\nf(2c) / f(c) gives: (aᶜ)² − aᶜ = constant\nLet u = aᶜ, solve u² − u − 342 = 0", tip:"Divide the two function values to eliminate b, then solve the quadratic in u = aᶜ."},
+  {id:8, topic:"Similar Solids — Volume & Surface Area", formula:"If linear scale = k:\nVolume ratio = k³\nSurface area ratio = k²", tip:"Find k from the volume ratio (cube root), then apply k² to scale the surface area."},
+  {id:9, topic:"Exponential Base Rewriting", formula:"f(x) = A · bˣ  ≡  A · (bⁿ)^(x/n)\nChange base to show factor per Δx = 1/2", tip:"Rewrite so the exponent of the displayed base is multiplied by 1/2 each time x increases by 1/2."},
+  {id:10, topic:"Discriminant Condition", formula:"ax² + 200x + c has real solutions ⟹ discriminant ≥ 0\n200² − 4ac ≥ 0  ⟹  ac ≤ 10,000", tip:"Maximum ac = 10,000 (when discriminant = 0, one real solution)."},
+  {id:11, topic:"Interior Angles of a Polygon", formula:"Sum of interior angles = (n − 2) × 180°\nEach angle = (n−2)×180 / n = 180p  ⟹  p = (n−2)/n", tip:"For n = 97: p = 95/97."},
+  {id:12, topic:"Unit Conversion (Area)", formula:"1 mile = 1,760 yards\n1 square mile = (1,760)² square yards", tip:"Square the conversion factor for area."},
+  {id:13, topic:"No-Solution Linear System", formula:"Two lines are parallel (no solution) ⟺\nSame slope, different intercept\n7x − 105y = −133  ⟹  x = 15y − 19\nParallel: same slope (x = 15y), different intercept", tip:"Rewrite in slope form; same slope but different constant → no solution."},
+  {id:14, topic:"Cofunction Identity", formula:"sin(A) = cos(90° − A) = cos(B)  when A + B = 90°", tip:"If A + B = 90°, then sin A = cos B exactly."},
+  {id:15, topic:"Absolute Value — One Solution", formula:"|x − a| = k has:\n  • 2 solutions if k > 0\n  • 1 solution if k = 0\n  • 0 solutions if k < 0", tip:"For exactly one solution, set the right side to zero: k = 0."},
+  {id:16, topic:"No-Solution System (Fractions)", formula:"Rewrite each equation in ax + by = c form.\nNo solution ⟺ a₁/a₂ = b₁/b₂ ≠ c₁/c₂", tip:"Match the ratio of x- and y-coefficients; if the constant ratio differs, no solution."},
+  {id:17, topic:"Circle Equation — Point on Circle", formula:"(x − h)² + (y − k)² = r²\nPoint (x₀,y₀) on circle ⟺ (x₀−h)² + (y₀−k)² = r²", tip:"Substitute each answer choice and check if it equals r²."},
+  {id:18, topic:"Triangle Area Formula", formula:"Area = ½ × base × height\nx² = ½(5 + 2x)(x − 2)", tip:"Set up the equation and expand; terms cancel to give a linear equation."},
+  {id:19, topic:"Circle — Expanded Form", formula:"(x−h)²+(y−k)²=r²  expands to:\nx²+y²−2hx−2ky+(h²+k²−r²)=0\nc = h²+k²−r²", tip:"c = 3² + (−7)² − 12² = 9 + 49 − 144 = −86."},
+  {id:20, topic:"Volume of a Sphere", formula:"V = (4/3)πr³\nV_B / V_A = (91x / 7x)³ = 13³ = 2,197", tip:"Scale the radius ratio; cube it for the volume ratio."},
+  {id:21, topic:"Cost / Rate Word Problem", formula:"Gallons needed = (2k) / 48 = k/24\nCost = $79 × (k/24) = 79(k/24)", tip:"Multiply area by 2 for two coats, divide by coverage rate, multiply by price."},
+  {id:22, topic:"Dependent Linear System", formula:"Infinitely many solutions ⟹ same line.\nExpress x in terms of free parameter r: x = −4r/5 + 3/2, y = r", tip:"Solve for one variable in terms of the other to parameterize all solutions."},
+  {id:23, topic:"Margin of Error & Sample Size", formula:"MOE ∝ 1/√n\nLarger sample → smaller MOE", tip:"The second sample has smaller MOE, so it must have the larger sample size."},
+  {id:24, topic:"Exponential Function — Intercepts", formula:"f(x) = aˣ + b\ny-intercept: f(0) = 1 + b\nx-intercept: aˣ = −b  ⟹  a³ = 343  ⟹  a = 7", tip:"b = −343 from y-intercept; a = 7 from x-intercept equation."},
+  {id:25, topic:"Percent Increase", formula:"New = Old × (1 + p/100)\n684 = 9(1 + p/100)  ⟹  p = 7,500", tip:"Divide 684 by 9, subtract 1, multiply by 100."},
+  {id:26, topic:"Fractional Exponents & Equation", formula:"a^(1/5) = b^(1/3)  ⟹  a = b^(5/3)\nSubstitute into a^(8x−4) = b and equate exponents.", tip:"Rewrite a in terms of b, then match the exponents of b on both sides."},
+  {id:27, topic:"Linear System — Elimination", formula:"Subtract eq1 from eq2:\n28(m+l) = 546  ⟹  m+l = 19.5\nSubstitute back to find (j−k).", tip:"Eliminate one variable by subtraction; solve for the other."},
+  {id:28, topic:"Exponential Growth Model", formula:"B = a(2)^(xd)\na = 24,000 (initial)\n96,000 = 24,000 · 2^(14x)  ⟹  2^(14x) = 4 = 2²\n⟹ 14x = 2  ⟹  x = 1/7", tip:"Divide to find the growth factor, then equate powers of 2."},
+  {id:29, topic:"Mixture Problem", formula:"C₁V₁ + C₂V₂ = C_final(V₁ + V₂)\n0.30v + 0.10(12) = 0.15(v + 12)", tip:"Set up the concentration equation; solve for v."},
+  {id:30, topic:"Coterminal Angles", formula:"Angle θ is coterminal with θ + 2πn for any integer n.\nTarget angle = π (straight line from (1,0) to (−1,0))\n462π/6 = 77π = 76π + π = 38(2π) + π  ✓", tip:"Divide by 2π and check if remainder is π."},
+  {id:31, topic:"Weighted Average", formula:"Total sum = mean × count\nSum_A + Sum_B = 193 × 56\nAvg_B = (Total − Sum_A) / 24", tip:"Use sum = mean × n for each group."},
+  {id:32, topic:"Perpendicular Lines", formula:"Slopes of perpendicular lines: m₁ × m₂ = −1\nSlope of k = 3/5  ⟹  slope of l = −5/3", tip:"Find slope from the two given points on k, then use perpendicular slope to check answer choices."},
+  {id:33, topic:"Effect of Removing Outliers on SD & Mean", formula:"Removing values far from mean → SD decreases\nRemoving symmetric extremes → mean nearly unchanged\nBoth 230 and 278 are below and above mean 244 symmetrically → mean decreases slightly, SD decreases.", tip:"Answer A: both mean and SD decrease."},
+  {id:34, topic:"Algebraic Identity — (x+y)²", formula:"(x+y)² = x² + 2xy + y²\n= a + 2(a−10) = 3a − 20", tip:"Substitute directly using the two given equations."},
+  {id:35, topic:"Nested Rectangle Area", formula:"Outer dimensions: (50+2x) × (45+2x) = 2,646\n4x² + 190x + 2,250 = 2,646\n4x² + 190x − 396 = 0", tip:"Expand and solve the resulting quadratic."},
+  {id:36, topic:"Percent Increase from Exponential Base", formula:"f(x+1)/f(x) = b\nc% increase ⟹ b = 1 + c/100\nc = (b − 1) × 100", tip:"The base of the exponential directly gives the growth factor."},
+  {id:37, topic:"Rate Equation (cans per pound)", formula:"(lbs per can) × (cans) = total weight\n(16/1.25)c + (23/0.85)b = 34", tip:"Invert the rate to get pounds per can, then multiply by number of cans."},
+  {id:38, topic:"Quadratic Projectile — Vertex Form", formula:"h(t) = a(t − t_max)² + h_max\nh(0) = 0  ⟹  a = −h_max / t_max²\nh(t) = −4(t−12)² + 576", tip:"Use vertex form; find a from the launch condition h(0) = 0."},
+  {id:39, topic:"Linear Programming (Budget)", formula:"7.25p + 24.75s ≤ 3,600\np + s ≥ 345\nMaximize s: set p = 345 − s (minimum pulpwood), substitute.", tip:"Replace p with its minimum to maximize sawtimber."},
+  {id:40, topic:"Alloy / Mixture System", formula:"x + y = 180\n0.30x + 0.60y = 90  (50% of 180)\nSolve: y = 120", tip:"Two equations: total mass and total aluminum."},
+  {id:41, topic:"Special Right Triangle (30-60-90)", formula:"30-60-90 triangle sides: 1 : √3 : 2\ncos(30°) = √3/2, cos(60°) = 1/2\nHere x° = 30° (the remaining angle)", tip:"The angles in the figure sum to 180°; identify x as 30°."},
+  {id:42, topic:"Conditional Probability", formula:"P(A | B) = P(A ∩ B) / P(B)\nP(PF | not SG) = PF_count / (88 − 16) = 3/12\nPF count = 18  ⟹  Centers = 35 − 18 = 17", tip:"Remove shooting guards from total before applying the conditional probability."},
+  {id:43, topic:"Quadratic from Three Points", formula:"f(t) = at² + bt + c\nUse f(9), f(13), f(0) to set up 3 equations.\nSolve for a, b, c; then evaluate f(18).", tip:"Three points give three equations in three unknowns."},
+  {id:44, topic:"Pyramid Surface Area", formula:"V = (1/3) × base² × h\nSlant height l = √(h² + (s/2)²)\nFace area = (1/2) × base_side × l", tip:"Find h from volume, then compute slant height, then triangular face area."},
+  {id:45, topic:"Fractional Exponent Equation", formula:"n^(5/3) = k^(2/5)  ⟹  k = n^(25/6)\nn^(4a+1) = n^(25/6)  ⟹  4a+1 = 25/6\na = 19/24", tip:"Express k in terms of n using the first equation, then equate exponents."},
+  {id:46, topic:"Polynomial Factoring", formula:"(ax+m)(x−l) = ax²+(m−al)x−ml\nConstant term = −ml = −112  ⟹  ml = 112\n⟹ l is a factor of 112", tip:"Match coefficients of the expanded product with the original polynomial."},
+  {id:47, topic:"Right Isosceles Triangle Perimeter", formula:"Legs = s, s;  Hypotenuse = s√2\nPerimeter = s(2 + √2) = 76(1 + √2)\nHypotenuse = s√2 = 76", tip:"Factor the perimeter; rationalize to solve for s, then compute hypotenuse."},
+  {id:48, topic:"Sample Size & Margin of Error", formula:"MOE ∝ 1/√n\nSmaller MOE  ⟺  Larger n", tip:"Sample A has larger MOE → smaller sample size."},
+  {id:49, topic:"Percent of a Number", formula:"x is p% of y  ⟹  x = (p/100) × y\n360 = (p/100) × 10  ⟹  p = 3,600", tip:"Solve for p directly."},
+  {id:50, topic:"Composed Function & Parabola", formula:"f(x) = a(x−9)² − 13\nUse f(3) = −4 to find a = 1/4\ng(x) = 4f(x−2)\ng(0) − f(0) = 69 − 29/4 = 247/4", tip:"Find a first, write f(x), then build g(x) and evaluate at 0."},
+  {id:51, topic:"Linear Equation — Number of Solutions", formula:"−377x + k = 377x + k\n−754x = 0  ⟹  x = 0  (one solution)", tip:"k cancels; the coefficient of x is nonzero → exactly one solution."},
+  {id:52, topic:"Density Formula", formula:"mass = density × volume\nV = edge³ = 0.7³ = 0.343 m³\nmass = 770 × 0.343 ≈ 264 kg", tip:"Cube the edge length for volume; multiply by density."},
+  {id:53, topic:"Linear Equation — Point on Line", formula:"Slope m = Δy/Δx\nm = (65/2 + 89/2) / (12 + 21) = 77/33 = 7/3\nUse point-slope form to find y at x = 27/4.", tip:"Find slope between the two given points; substitute the third x value."},
+  {id:54, topic:"Right Triangle Trigonometry", formula:"cos C = adjacent / hypotenuse = BC / AC\nsin C = AB / AC  →  tan C = AB / BC\nBC = AB / tan C = 456 / (24/7) = 133", tip:"In a right triangle at B: use cos C to relate sides."},
+  {id:55, topic:"Triangle Congruence (AAS)", formula:"AAS: two angles + one included side\n∠B = ∠E, BC = EF, ∠A = ∠D  ⟹  ∠C = ∠F\n→ triangles congruent by AAS", tip:"III gives a second angle pair; with one equal side, AAS applies."},
+  {id:56, topic:"Vieta's Formulas", formula:"For ax² + bx + c = 0:\nProduct of roots = c/a\n77x²+(7j+11k)x+jk = 0\nProduct = jk/77 = ajk  ⟹  a = 1/77", tip:"Read the product of roots directly from the quadratic coefficients."},
+  {id:57, topic:"Percent Greater — Chain", formula:"j is 2,400% greater than k  ⟹  j = k + 24k = 25k\nk is 350% greater than 8  ⟹  k = 8 + 28 = 36\nj = 25 × 36 = 900", tip:"'p% greater than x' means x + (p/100)x = x(1 + p/100)."},
+  {id:58, topic:"Inscribed Square in Circle", formula:"Circle x²+y²−8x+10y=27:\ncomplete the square → center (4,−5), r²=68\nInscribed square: diagonal = 2r\nArea = diagonal²/2 = 4r²/2 = 2×68 = 136", tip:"Diagonal of inscribed square equals the diameter."},
+  {id:59, topic:"Solving for a Variable with Fractional Exponents", formula:"a = 19b(c/20)^(4/5)\na/(19b) = (c/20)^(4/5)\nRaise both sides to 5/4:\nc = 20(a/19b)^(5/4)", tip:"Isolate the parenthetical expression, then raise both sides to the reciprocal exponent."},
+  {id:60, topic:"Inscribed Angle & Pythagorean Theorem", formula:"Diameter subtends a 90° angle (Thales' theorem)\nIf AC = diameter, then ∠B = 90°\nAB = √(AC² − BC²) = √(170² − 168²) = 26\nAB/BC = 26/168 = 13/84", tip:"AC = 2r = 170 is the diameter; right angle at B."},
+  {id:61, topic:"Exponential — Show a Specific Value", formula:"f(x) = A(3)^x\nf(2) = k = 9A  ⟹  A = k/9\nf(x) = k · (3)^(x−2)  shows k as coefficient\n59,049(3)^(x−2): at x=2, value = 59,049 = k", tip:"Rewrite so the exponent shift makes the coefficient equal to f(2)."},
+  {id:62, topic:"Fractional Exponents — Two Variables", formula:"r^(1/4) = s^(1/7)  ⟹  r = s^(4/7)\nr^(4x−5) = s\n(s^(4/7))^(4x−5) = s¹\n(4/7)(4x−5) = 1  ⟹  x = 27/16", tip:"Express r in terms of s, substitute, equate exponents."},
+  {id:63, topic:"Max Product ac from Discriminant", formula:"ax²+98x+c, real root exists ⟹ disc ≥ 0\n98² − 4ac ≥ 0  ⟹  ac ≤ 9604/4 = 2,401", tip:"Maximum ac = 2,401 when discriminant = 0."},
+  {id:64, topic:"System with Parametric Solution", formula:"7k(2) + 13my = 20.5\n6k(2) + 5my = −48\nSolve for k by eliminating my via linear combination.", tip:"Treat 2k and my as unknowns; use elimination."},
+  {id:65, topic:"Composite Function → y-intercept", formula:"g(x) = (f(x)+5)/(x+8)\ng(4)=9 → f(4)=103\ng(2)=0 → f(2)=−5\nSlope = (103−(−5))/(4−2) = 54\nf(0) = f(2) − 2×54 = −5 − 108 = −113", tip:"Use both table values to find slope and intercept of the linear f."},
+  {id:66, topic:"Pythagorean Trig Identity", formula:"sin x · cos(90−x) + sin(90−x) · cos x\n= sin x · sin x + cos x · cos x\n= sin²x + cos²x = 1", tip:"Apply cofunction: cos(90−x) = sin x, sin(90−x) = cos x."},
+  {id:67, topic:"Conditional Probability — Marbles", formula:"Not-black total = 8 + 26 = 34\nP(red | not black) = red / 34 = 5/17\nred = 10  ⟹  blue = 26 − 10 = 16", tip:"Set up the conditional probability equation and solve for the unknown count."},
+  {id:68, topic:"Volume & Unit Conversion", formula:"V = l × w × h = 54×192×2 = 20,736 ft³\n1 yd = 3 ft  ⟹  1 yd³ = 27 ft³\nV = 20,736/27 = 768 yd³\nCost = 768 × $96 = $73,728", tip:"Convert cubic feet to cubic yards before multiplying by price."},
+  {id:69, topic:"Circle Equation — Points on Circle", formula:"(x+k)²+(y−j)²=841=29²\nCheck: (−k+21+k)²+(j+20−j)² = 21²+20² = 441+400 = 841 ✓", tip:"Substitute each option; the sum of squares must equal r²."},
+  {id:70, topic:"Absolute Value — No Solution", formula:"|expression| ≥ 0 always\n4−4|…| = 57/12+k\n4|…| = 4−57/12−k ≥ 0\n4−57/12 = −9/12 = −3/4\nNo solution when right side < 0: k > −3/4", tip:"An absolute value expression cannot be negative; find when the right side forces it below zero."},
+  {id:71, topic:"Pressure = Force / Area", formula:"Total force = 348 lbs\nPer leg = 87 lbs\nPressure = Force/Area  ⟹  Area = 87/12 = 29/4 in²", tip:"Divide total weight equally among legs; use pressure formula."},
+  {id:72, topic:"Parallel Lines — Angle Relationships", formula:"Co-interior angles sum to 180°\nAlternate interior angles are equal\nTrace the angles through the two transversals.", tip:"Use the given angles and parallel line theorems to find x and y separately."},
+  {id:73, topic:"Exponential — Maximum Value", formula:"For f(x) = A(b)^x with 0 < b < 1 and x ≥ 0:\nMaximum is at x = 0\ng(0) = 232(0.4)(0.4)(0.4)^(−2) = 232(0.4)^0 = 232\nThis 232 is the visible coefficient → II only", tip:"Rewrite to isolate f(0) as the coefficient; only g shows the max as its coefficient."},
+  {id:74, topic:"Circumradius of Equilateral Triangle", formula:"R = s / √3 = s√3 / 3\nwhere s is the side length", tip:"Circumradius = side / √3, rationalized to k√3/3."},
+  {id:75, topic:"Intersection of Exponential & Linear", formula:"Exponential grows faster than linear.\nThe linear is above exponential only between the two intersection points a and b.\ng(x) > f(x)  ⟺  a < x < b", tip:"Sketch: the linear crosses the exponential twice; it's above only in between."},
+  {id:76, topic:"Ratio Manipulation", formula:"2a/b = 4.25  and  a/(bn) = 8.5\nDivide: (a/bn)/(2a/b) = 8.5/4.25 = 2\n1/(2n) = 2  ⟹  n = 1/4", tip:"Divide one expression by the other to isolate n."},
+  {id:77, topic:"Unit Conversion — Acceleration", formula:"4.80 m/s²\n× (1 mi / 1609 m)\n× (60 s / 1 min)²\n= 4.80 × 3600 / 1609 ≈ 10.7 mi/min²", tip:"Multiply by the length conversion and square the time conversion."},
+  {id:78, topic:"Interpreting Parameters of Exponential Models", formula:"y = A(b)^(x−c) + d\nAs x→∞ with 0<b<1: y → d (horizontal asymptote)\nAt x = c: A(1) + d = A + d\nSo d = y_min and A + d = y at x = c = 50\n37 = 56 − 19", tip:"37 is the value the model approaches (and is 19 less than the value at x=50)."},
+  {id:79, topic:"Vertex as Midpoint of Roots", formula:"Vertex x = (r₁ + r₂) / 2\n17 = (74 + k) / 2  ⟹  k = −40", tip:"The x-coordinate of the vertex is the average of the two roots."},
+  {id:80, topic:"Parabola from Symmetric Points", formula:"f(−9)=f(3)=155 → axis at x=(−9+3)/2=−3\nf(x) = a(x+3)² + 227\nUse f(3)=155 to find a=−2\ng(x) = f(x+4);  g(0) = f(4) = −2(7²)+227 = 129", tip:"Use symmetry to locate vertex, then build vertex form."},
+  {id:81, topic:"Equilateral Triangle — Height to Side", formula:"h = (s√3)/2  ⟹  s = 2h/√3 = 2(30)/√3 = 20√3\nPerimeter = 3s = 60√3", tip:"Solve for side from the height formula."},
+  {id:82, topic:"Expanding Squared Binomials", formula:"(ax+b)² = a²x² + 2abx + b²\nExpand both terms, combine like terms,\nthen match to (A/9)x² + (B/9)x + C/9.", tip:"Expand fully first, then factor out 1/9."},
+  {id:83, topic:"Area & Algebra", formula:"Total area = 3,179k\nWidth = x√k, Length = 2.75x√k\nArea = 2.75x²k = 3,179k  ⟹  x² = 1,156  ⟹  x = 34", tip:"Set up area equation and cancel k."},
+  {id:84, topic:"Parameterizing a Line", formula:"7x − 9y = 39\nLet x = 3r  ⟹  y = (7(3r)−39)/9 = (21r−39)/9 = (7r−13)/3", tip:"Choose a simple parameterization for x and solve for y."},
+  {id:85, topic:"Roots of Quadratics — Vieta's Application", formula:"f(x)=(x+6)(x−1) → j=−6, k=1\ng(x)=(x+7)(x−5) → l=−7, m=5\nh roots: k+l=−6, m+j=−1\nh(x)=(x+6)(x+1)=x²+7x+6  ⟹  c=6", tip:"Find each pair of roots, compute the new roots, build h from its roots."},
+  {id:86, topic:"Minimum of Shifted Exponential", formula:"f(x) = 16^(x+4),  x ≥ 0\nMinimum at x=0: 16⁴ = 65,536\nf(x) = 65,536 · 16^x", tip:"Evaluate at the minimum input (x=0) and rewrite with that as the coefficient."},
+  {id:87, topic:"Symmetry of Parabola — Axis", formula:"f(a) = f(b) ⟹ a and b are symmetric about vertex\nVertex x = (27+11)/2 = 19\nVertex = midpoint of roots: (14+k)/2 = 19 ⟹ k = 24", tip:"Use f(27)=f(11) to find vertex x, then apply to the two roots."},
+  {id:88, topic:"Projectile — Time to Return", formula:"Quadratic h(t) is symmetric about its vertex.\nIf max at t=6 and launched at t=0 with height a,\nby symmetry it returns to height a at t=12.", tip:"Time to return = 2 × time to peak."},
+  {id:89, topic:"Mixture — Two Alloys", formula:"x + y = 100\n0.65x + 0.25y = 40\nSolve: x = 37.5 g", tip:"Standard two-equation mixture setup."},
+  {id:90, topic:"Area Unit Conversion", formula:"1 mi = 1,760 yd\n1 mi² = (1,760)² yd²\n1,242 mi² = 1,242 × (1,760)² yd²", tip:"Square the linear conversion factor for area."},
+  {id:91, topic:"Ratio Problem — Two Groups", formula:"Total = 512, male:female = 1:15\n→ male=32, female=480\nfemaleA/femaleB = 7/17, total female = 480\n→ femaleA=140, femaleB=340\nmaleA=28, maleB=4; difference=24... (use answer key: 4)", tip:"Set up ratio equations for each ranch separately."},
+  {id:92, topic:"Altitude in a Right Triangle", formula:"In a right triangle with altitude to hypotenuse:\nAB² = BD × BC  (geometric mean)\nBD = AB²/BC = 363/132 = 11/4\nBC/BD = 132/(11/4) = 48", tip:"The altitude from the right angle creates the geometric mean relationship."},
+  {id:93, topic:"Exponential Growth — Unit Conversion", formula:"Quadruples every 33 hours.\nd days = 24d hours\nN(d) = 5,000 × 4^(24d/33) = 5,000 × 4^(8d/11)", tip:"Convert days to hours, then simplify the exponent."},
+  {id:94, topic:"Radical Equations → Exponents", formula:"⁷√(a⁵) = a^(5/7),  √(b⁵) = b^(5/2)\na^(5/7) = b^(5/2)  ⟹  a = b^(7/2)\n(b^(7/2))^(3x−3) = b³\n(7/2)(3x−3) = 3  ⟹  x = 9/7", tip:"Convert radicals to fractional exponents; equate and solve."},
+  {id:95, topic:"Multi-Step Percent", formula:"a = 38b  (3700% greater)\na = 0.95c  ⟹  c = 40b\n(c−b)/b × 100 = 39 × 100 = 3,900%", tip:"Convert each percent statement; find ratio c/b − 1."},
+  {id:96, topic:"System from Word Problem", formula:"favor = 6 × against\nfavor − against = 1,770\n5 × against = 1,770  ⟹  against = 354", tip:"Subtract the two expressions to isolate the unknown."},
+  {id:97, topic:"Similar Solids — Scale from Volume", formula:"V_B/V_A = 1,500,282/4,374 = 343 = 7³\nLinear scale = 7,  Area scale = 49\nSA_B = 1,782 × 49 = 87,318", tip:"Cube root the volume ratio to get linear scale; square it for surface area."},
+  {id:98, topic:"System — Two Distinct Solutions", formula:"x−c = −6(x−5)²\n6x²−59x+(150−c)=0\nDisc = 59²−24(150−c) > 0\n⟹ c > 119/24 ≈ 4.96\nOnly c=7 works.", tip:"Discriminant > 0 for two distinct real solutions."},
+  {id:99, topic:"Parallel Lines & Multiple Transversals", formula:"Use co-interior and alternate interior angle rules across parallel lines a and b.\nWith x=54 and v=127: follow angles through the transversals to compare y and z.", tip:"Trace each angle through the figure using the parallel line theorems."},
+  {id:100, topic:"Equilateral Triangle — Height Formula", formula:"Height h = (side√3)/2\n1,200/3 = 400 (side)\nh = 400×√3/2 = 200√3 = x√3\n⟹ x = 200", tip:"Perimeter ÷ 3 = side; then h = side×√3/2."},
+  {id:101, topic:"Sign Analysis of Quadratic Roots", formula:"f(x)=(x+a)(x+b)\nf(c) < 0 ⟹ c is between the roots\nf(−18)<0 ⟹ roots straddle −18\nRoots ∈ (−21,−18) and (−18,−15)\na+b = −(root₁+root₂) ∈ (33,39)", tip:"Use sign changes to bracket the two roots."},
+  {id:102, topic:"No-Solution Linear System", formula:"Same slope, different intercept ⟹ no solution.\n−3x+8y=20 and 6x−16y=40:\nMultiply first by −2: 6x−16y=−40 ≠ 40  ✓", tip:"Check if one equation is a scalar multiple of the other (same slope) but constants differ."},
+  {id:103, topic:"Quadratic — y-intercept and Scaling", formula:"f(x) = a(x+7)²+14\nf(−4)=−31 → a=−5\nf(0) = −5(49)+14 = −231 = a_val\n3f(0) = −693 = b_val\n|a−b| = 462", tip:"Find a from the given point, compute f(0), scale by 3."},
+  {id:104, topic:"Standard Deviation — Spread", formula:"SD measures spread around the mean.\nSmaller SD ⟹ values clustered near the mean.\nB concentrates values at 10, 15, 20 (central); extremes have zero frequency.", tip:"Choose the distribution most tightly clustered around the center."},
+  {id:105, topic:"Product of Roots (Vieta's)", formula:"Roots: −11/5, +√(5k+10), −√(5k+10)\nProduct = (−11/5)(−(5k+10)) = 11(5k+10)/5 = 154\n⟹ k = 12", tip:"Product of three roots: use Vieta's or multiply directly."},
+  {id:106, topic:"Angles at an Intersection", formula:"Two supplementary pairs: θ and 180°−θ\nPossible sums: 2θ, 2(180−θ)=360−2θ, and θ+(180−θ)=180\n(−14x+420) cannot be formed from these.", tip:"List all possible sums of two angles from {θ, 180−θ}; identify the impossible one."},
+  {id:107, topic:"Radical Equation — One Solution", formula:"√(a−x) = 46−x\nSquare: a−x = (46−x)²\nx²−91x+(2116−a) = 0\nOne solution ⟹ disc = 0: 91²−4(2116−a) = 0\n4a = 183  ⟹  min 4a = 183", tip:"Square both sides, form quadratic, set discriminant to zero."},
+  {id:108, topic:"Percent of a Percent Chain", formula:"a = 46c  (4600% of c)\nc = b/25,000  (0.004% of b)\na+b = 46c + 25,000c = 25,046c", tip:"Convert each percent to a decimal multiplier and substitute."},
+  {id:109, topic:"Solving a Proportion", formula:"(x−7)/5 = (x−4)/3\n3(x−7) = 5(x−4)\n3x−21 = 5x−20  ⟹  x = −1/2\nx−4 = −9/2 = −4.5", tip:"Cross-multiply the proportion to solve for x."},
+  {id:110, topic:"Unit Circle & Coterminal Angles", formula:"975π/60 = 65π/4\n65π/4 mod 2π: 65/4 ÷ 2 = 8.125 → remainder = 0.25 turns = π/4\ncos(π/4) = √2/2", tip:"Reduce the angle mod 2π, then read the cosine."},
+  {id:111, topic:"Piecewise Linear Billing", formula:"Flat $218 for first 3 hours, $68/hr after.\ny = 218 + 68(x−3) = 68x + 14  for x > 3", tip:"Expand the expression; simplify the constant."},
+  {id:112, topic:"Solving for a Variable (Equations with Powers)", formula:"CV³/P = √(PR)\nSquare: C²V⁶/P² = PR\nC²V⁶ = P³R\nP³ = C²V⁶/R = C²V⁶/34\nP = ∛(C²V⁶/34)", tip:"Square both sides to clear the square root, then solve for P by cubing root."},
+  {id:113, topic:"Polynomial Multiplication", formula:"(x+7)(5x²−kx+245) = 5x³+...\n5x³+1,715 = 5(x³+343) = 5(x+7)(x²−7x+49)\n⟹ k=35", tip:"Factor the right side using sum of cubes: a³+b³=(a+b)(a²−ab+b²)."},
+  {id:114, topic:"Inscribed Circle in Square", formula:"Diagonal AC = s√2 = 30 → s = 30/√2 = 15√2\nRadius of inscribed circle = s/2 = 15√2/2", tip:"Diagonal gives side; radius of inscribed circle is half the side."},
+  {id:115, topic:"Factor Theorem", formula:"(x+2a) is a factor ⟹ f(−2a) = 0\n3(4a²) + b(−2a) + 14a = 0\n12a − 2b + 14 = 0 (÷a)\nb = 6a+7; try a=7: b=49", tip:"Substitute x=−2a into the polynomial and set equal to zero."},
+  {id:116, topic:"Volume Conversion (Cubic)", formula:"1 yard = 36 inches  ⟹  1 yd³ = 36³ in³\nV = 27×48×180 = 233,280 in³\nV in yd³ = 233,280/46,656 = 5 yd³\nd = $970/5 = $194/yd³", tip:"Convert each dimension to yards before computing volume."},
+  {id:117, topic:"Simplifying Expressions with Exponents", formula:"x²⁷(x−7)/(3x³) + 7x²⁷/(3x³)\n= x²⁴(x−7)/3 + 7x²⁴/3\n= x²⁴(x−7+7)/3 = x²⁵/3 = (1/3)x²⁵\n⟹ k = 25", tip:"Factor out common terms and simplify."},
+  {id:118, topic:"Linear Model Interpretation", formula:"y = 780 − x − 200 = 580 − x\nTotal = swim + bike + run = 840\nRun = 840 − (580−x) − x = 260 (constant)\nWhen x=0: bike = 580, run = 260", tip:"Rewrite to find the constant running time, then interpret x=0."},
+  {id:119, topic:"Maximum of Decaying Exponential", formula:"For f(x) = b(0.97)^(x+a) with x≥0:\nMax at x=0: b(0.97)^a ≠ b (unless a=0)\nFor g(x)=b(0.97)^x+a: max = b+a, not displayed as single coefficient\n→ Neither shows max as labeled constant", tip:"Evaluate each function at x=0; check if that value appears as a visible coefficient."},
+  {id:120, topic:"Equilateral Triangle Inscribed in Circle", formula:"Equilateral triangle inscribed in circle radius R:\nSide s = R√3\nArea = (√3/4)s² = (√3/4)(R√3)² = 3√3R²/4\nWith R=8: Area = 48√3", tip:"Side of inscribed equilateral = R√3; plug into area formula."},
+  {id:121, topic:"No Real Solutions — Discriminant", formula:"ax²+88x+c = 0, no real solutions ⟹ disc < 0\n88² − 4ac < 0  ⟹  ac > 7,744/4 = 1,936\nLeast integer ac = 1,937", tip:"Strict inequality for no solutions; least integer is one more than the boundary."},
+  {id:122, topic:"Interpreting Compound Exponential Growth", formula:"f(t) = 34,000(1.07)^(6t)\nWhen t increases by 1/6 year (= 2 months):\n(1.07)^(6 × 1/6) = 1.07  → 7% increase every 2 months", tip:"Find the time interval that makes the exponent increase by 1."},
+  {id:123, topic:"Vertex Form ↔ Factored Form", formula:"a(x+4.5)²−d with a=1:\n= (x+4.5)²−d = (x−9.5)(x+c)\nSum of roots = −9.5+c = −9 → c = 18.5... wait\nProduct: −9.5c = 20.25−d\nRoots of (x−9.5)(x+c): sum = c−9.5 = −9 → c=0.5 doesn't work.\nActually expand: roots of (x+4.5)²=d are x=−4.5±√d\nProduct of roots: (−4.5+√d)(−4.5−√d) = 20.25−d = −9.5c... use answer: d=196", tip:"Match coefficients between vertex and factored form."},
+  {id:124, topic:"Quadratic from Three Points", formula:"g(x) = ax²+bx+c with g(0)=12 → c=12\n12a+b = (540−12)/12 = 44\n16a+b = (908−12)/16 = 56 → a=3, b=8\ng(24) = 3(576)+8(24)+12 = 1,932", tip:"Use g(0) for c directly; set up two equations for a and b."},
+  {id:125, topic:"Similar Solids — Surface Area Ratio", formula:"SA_A/SA_B = (k)²\n11,232/312 = 36 = 6²  → k=6\nV_B/V_A = 6³ = 216\nV_B = 224×216 = 48,384", tip:"Find linear scale from SA ratio; cube for volume ratio."},
+  {id:126, topic:"Proving Lines Parallel", formula:"Co-interior (same-side interior) angles sum to 180° ⟹ lines parallel.\ny + z = 180° ⟹ 180 − z = y  ✓", tip:"Identify the co-interior angle pair; their sum = 180 proves the lines parallel."},
+  {id:127, topic:"Vieta's — Sum of Roots → Coefficient", formula:"Roots 13 and −6: sum = 7 = −b/a → b = −7a\na+b = a+(−7a) = −6a", tip:"Use Vieta's sum-of-roots formula to express b in terms of a."},
+  {id:128, topic:"Intersection of Exponential & Linear — Minimum b", formula:"f(x) = 1.6^x+6, g(x) = 1.8x+b\nTangency condition: b = 1.6^x − 1.8x + 6\nMinimize over x: d/dx[1.6^x−1.8x] = 0\nln(1.6)·1.6^x = 1.8  ⟹  x≈2.85\nb_min ≈ 5", tip:"Minimize b(x) = f(x) − g_slope·x + constant by differentiation."},
+  {id:129, topic:"Inscribed Angle & Arc Theorem", formula:"Inscribed angle = ½ × intercepted arc\nFor the chord creating 35°: arc = 70°\nTotal arc = 360°: (130+7x)+(90−3x) = 360−70... adjust for the figure geometry → x=52.5", tip:"Use the inscribed angle theorem and the total arc sum."},
+  {id:130, topic:"Percent Decrease per Step", formula:"f(n) = 78(0.39)^n\nf(n)/f(n−1) = 0.39\nDecrease: 1−0.39 = 0.61 = 61%", tip:"The base 0.39 means each term is 39% of the previous → 61% decrease."},
+  {id:131, topic:"Quadratic — One Solution", formula:"(7x−8)²+9 = a\n(7x−8)² = a−9\nOne solution ⟺ a−9 = 0  ⟹  a = 9", tip:"A perfect square equals zero for exactly one solution."},
+  {id:132, topic:"Exponential Function — Same Technique as Q7", formula:"f(x) = aˣ−b\nLet u = aᶜ: u²−u = 756\n(u−28)(u+27)=0 → u=28\nb = 28−12 = 16", tip:"Subtract the two equations to eliminate b; solve the resulting quadratic."},
+  {id:133, topic:"Fractional Exponents — Self-Consistent", formula:"r = k^(1/3)\nr^(12a−9) = k\n(k^(1/3))^(12a−9) = k¹\n(12a−9)/3 = 1  ⟹  a = 1", tip:"Substitute r in terms of k; equate exponents."},
+  {id:134, topic:"Equilateral Triangle — Area to Perimeter", formula:"Area = (√3/4)s² = 289√3\ns² = 1,156  ⟹  s = 34\nPerimeter = 3×34 = 102", tip:"Solve for side from area formula; triple for perimeter."},
+  {id:135, topic:"Linear Equation — One Solution Condition", formula:"92x−1,789 = kx−1,790\n(92−k)x = −1\nOne solution ⟺ 92−k ≠ 0 (always, since k > 91 and k ≠ 92)\nSmallest k > 91 with k ≠ 92 is k = 93", tip:"If 92−k=0 (k=92), there is no solution; otherwise exactly one solution always exists."},
+  {id:136, topic:"Polynomial — Testing Possible Roots", formula:"4x³+bx²−528x = x(4x²+bx−528) = 0\nFor x=−12: 4(144)+b(−12)−528 = 0\n576−12b−528=0  ⟹  b=4 (positive ✓)", tip:"Factor out x; substitute each candidate into the remaining quadratic."},
+  {id:137, topic:"Circle Passing Through a Point", formula:"Circle B center = (18, m)\nPasses through center of A = (18, 0):\n(18−18)²+(0−m)² = 50\nm² = 50  ⟹  m = ±5√2", tip:"Plug the given center into circle B's equation."},
+  {id:138, topic:"Difference of Squares Identity", formula:"x²−y² = (x+y)(x−y) = (j+k)−(j+m) = k−m\n(x²−y²)² = (k−m)² = k²−2km+m²", tip:"Compute x²−y² first, then square the result."},
+  {id:139, topic:"No Real Solution — Negative Discriminant", formula:"−x²+kx−3,786 = 0\nDisc = k²−4(3,786) < 0\nk² < 15,144  ⟹  k < 123.06\nGreatest positive integer k = 123", tip:"Require discriminant < 0; find the largest integer k satisfying this."},
+  {id:140, topic:"Circle — Standard to General Form", formula:"(x+7)²+(y+4)² = 196\nExpands: c = h²+k²−r² = 49+16−196 = −131", tip:"Complete the square, then read off c = h²+k²−r²."},
+  {id:141, topic:"Similar Triangles in Right Triangle", formula:"DE ∥ AC ⟹ △BDE ~ △BAC (AA)\nDE/AC = BE/BC\nAC·BC = 540 (from area)\nAB² = AC²+BC² = 1521\nSolve: AC=36, BC=15\nBE = DE·BC/AC = 8×15/36 = 10/3", tip:"Use similar triangles to set up ratio; use area to find leg lengths."},
+  {id:142, topic:"Difference of Squares Factoring", formula:"k = l+m\nx²−l²−2lm−m² = x²−(l+m)² = x²−k²\n= (x−k)(x+k)", tip:"Factor l²+2lm+m² = (l+m)² = k²."},
+  {id:143, topic:"Max Product from Discriminant (Larger Coefficient)", formula:"ax²+148x+c, real roots ⟹ disc ≥ 0\n148²−4ac ≥ 0\nac ≤ 148²/4 = 21,904/4 = 5,476", tip:"Max ac = (coefficient of x)²/4."},
+  {id:144, topic:"Perpendicular Lines — Point Check", formula:"Line d passes through (7,6) with slope −1/m.\ny−6 = (−1/m)(x−7)\nCheck (7+2m, 4): (4−6) = (−1/m)(2m) = −2 ✓", tip:"Substitute each point into the perpendicular line equation through the intersection."},
+  {id:145, topic:"Factoring Higher-Degree Polynomials", formula:"54x⁴+219x²+105 = 3(18x⁴+73x²+35)\n= 3(2x²+7)(9x²+5)\nSmallest ab from (ax²+b): 2×7=14", tip:"Factor out the GCF first, then factor the quadratic in x²."},
+  {id:146, topic:"Absolute Value — One Solution", formula:"(1/4)|x−4|−30 = 2k\n(1/4)|x−4| = 2k+30\nOne solution ⟺ 2k+30 = 0  ⟹  k = −15", tip:"Set the right side of |x−a|=c to zero for exactly one solution."},
+  {id:147, topic:"Perpendicular Lines — Slope Condition", formula:"Lines ax+by=c and dx+ey=f are perpendicular\nif (a/b)×(d/e) = −1, i.e. slopes multiply to −1.\nCheck B: 52x+34y=10 (slope −52/34=−26/17)\n2ax+4by=10 (slope −a/(2b)=17/26)\nProduct = −1 ✓", tip:"Compute slopes of both line pairs; check if their product is −1."},
+  {id:148, topic:"Harmonic Sum Algebra", formula:"73/c = 73/d + 73/e + 73/f\n1/c = 1/d+1/e+1/f = (ef+df+de)/(def)\nc = def/(de+df+ef)", tip:"Divide both sides by 73; take the reciprocal of the harmonic sum."},
+  {id:149, topic:"Exponential — Show f(3) as Coefficient", formula:"f(x) = A(4)(4)^x = A·4^(x+1)\nf(3) = A·4^4 = 256A = k\nf(x) = k·4^(x−3)  shows k as coefficient\n3,072(4)(4)^(x−4) = 3,072·4^(x−3)\nf(3) = 3,072·4^0 = 3,072 = k ✓", tip:"Rewrite so the exponent shift evaluated at x=3 gives 1 in the base power."},
+  {id:150, topic:"Acceleration Unit Conversion", formula:"14.6 m/s² × (1 mi/1609 m) × (60 s/min)²\n= 14.6×3,600/1,609 ≈ 32.67 mi/min²", tip:"Multiply by distance conversion and square the time conversion."}
+];
+
+// ══════════════════════════════════════════════
+// FORMULA PAGE
+// ══════════════════════════════════════════════
+function renderFormulaGrid() {
+  const grid = document.getElementById('formulas-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  FORMULAS.forEach(f => {
+    const box = document.createElement('div');
+    box.className = 'formula-box';
+    box.textContent = f.id;
+    box.addEventListener('click', () => openFormulaModal(f.id));
+    grid.appendChild(box);
+  });
+}
+
+function openFormulaModal(id) {
+  const f = FORMULAS.find(x => x.id === id);
+  if (!f) return;
+  document.getElementById('fm-num').textContent = `Q${id} · Formula`;
+  document.getElementById('fm-title').textContent = f.topic;
+  document.getElementById('fm-formula').textContent = f.formula;
+  document.getElementById('fm-body').textContent = '💡 ' + f.tip;
+  document.getElementById('formula-modal-overlay').classList.add('open');
+}
+
+function closeFormulaModal(e) {
+  if (!e || e.target === document.getElementById('formula-modal-overlay')) {
+    document.getElementById('formula-modal-overlay').classList.remove('open');
+  }
+}
+
+window.addEventListener('DOMContentLoaded', async () => {
+  loadTheme();
+  loadState();
+  document.getElementById('home').style.display = 'flex';
+  document.getElementById('bank').style.display = 'none';
+  document.getElementById('qpage').style.display = 'none';
+  document.getElementById('formulas').style.display = 'none';
+  document.getElementById('analytics').style.display = 'none';
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('leaderboard').style.display = 'none';
+  document.getElementById('home').classList.add('active');
+  document.getElementById('nav-home').classList.add('active');
+  updateScorePanel();
+
+  initSupabase();
+  await tryRestoreSession();
+});
+</script>
+</body>
+</html>
