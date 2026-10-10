@@ -1348,7 +1348,7 @@
 // SUPABASE CONFIG — fill these in with your own project values
 // (see setup instructions provided separately)
 // ══════════════════════════════════════════════
-const SUPABASE_URL = 'https://bmnnzjnksfqyywvjhjlq.supabase.co';      
+const SUPABASE_URL = 'https://bmnnzjnksfqyywvjhjlq.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_CTK88OspyCkrK2riYfLb2w_ELLtiiCT';
 
 let supabaseClient = null;
@@ -1356,15 +1356,13 @@ let currentUser = null; // { id, username }
 let authMode = 'signin'; // 'signin' | 'signup'
 
 function initSupabase() {
-  if (SUPABASE_URL === 'https://bmnnzjnksfqyywvjhjlq.supabase.co' || SUPABASE_ANON_KEY === 'sb_publishable_CTK88OspyCkrK2riYfLb2w_ELLtiiCT') {
-    console.warn('Supabase not configured yet — leaderboard and accounts disabled.');
-    return false;
-  }
   try {
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log('Supabase client initialised OK');
     return true;
   } catch (e) {
     console.error('Supabase init failed', e);
+    supabaseClient = null;
     return false;
   }
 }
@@ -2508,7 +2506,7 @@ async function syncProgressToCloud() {
 async function loadLeaderboard() {
   const content = document.getElementById('lb-content');
   if (!supabaseClient) {
-    content.innerHTML = `<div class="lb-empty">Leaderboard isn't set up yet. Once Supabase is configured, friends who sign in will appear here.</div>`;
+    content.innerHTML = `<div class="lb-empty" style="color:#ef4444">❌ Supabase not initialised. Check URL and key.</div>`;
     return;
   }
   content.innerHTML = `<div class="lb-empty">Loading leaderboard…</div>`;
@@ -2523,7 +2521,7 @@ async function loadLeaderboard() {
 
     if (error) throw error;
     if (!data || data.length === 0) {
-      content.innerHTML = `<div class="lb-empty">No one has answered any questions yet — be the first!</div>`;
+      content.innerHTML = `<div class="lb-empty">No one on the board yet — sign in and answer questions to appear here!</div>`;
       return;
     }
 
@@ -2547,7 +2545,13 @@ async function loadLeaderboard() {
       </table>
     `;
   } catch (e) {
-    content.innerHTML = `<div class="lb-empty">Couldn't load the leaderboard. Try refreshing.</div>`;
+    content.innerHTML = `<div class="lb-empty" style="color:#ef4444;font-size:12px;text-align:left;line-height:1.8">
+      ❌ Error loading leaderboard:<br>
+      <strong>${e.message || JSON.stringify(e)}</strong><br><br>
+      If it says "relation does not exist" → run the SQL tables in Supabase.<br>
+      If it says "Invalid API key" → check your anon key.<br>
+      If it says "Failed to fetch" → check your Project URL.
+    </div>`;
     console.error(e);
   }
 }
