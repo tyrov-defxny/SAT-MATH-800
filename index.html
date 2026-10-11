@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>defxny — SAT Math 800</title>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1CXP57ESCE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-1CXP57ESCE');
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&family=UnifrakturMaguntia&display=swap');
@@ -805,6 +813,46 @@
   }
   .logout-btn:hover { border-color: var(--text3); color: var(--text); }
 
+  /* Sign in / account button */
+  .nav-signin-btn {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em;
+    text-transform: uppercase; padding: 7px 14px;
+    background: var(--text); color: var(--bg);
+    border: none; cursor: pointer; transition: all 0.2s;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .nav-signin-btn:hover { opacity: 0.8; }
+
+  /* Account dropdown */
+  .nav-account-wrap {
+    position: relative; display: flex; align-items: center;
+  }
+  .nav-account-btn {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em;
+    color: var(--text); background: transparent;
+    border: 1px solid var(--border); padding: 6px 12px;
+    cursor: pointer; transition: all 0.2s; white-space: nowrap;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .nav-account-btn:hover { border-color: var(--text3); }
+  .nav-account-btn .chevron { font-size: 8px; color: var(--text3); }
+  .nav-account-dropdown {
+    display: none; position: absolute; top: calc(100% + 8px); right: 0;
+    background: var(--surface); border: 1px solid var(--border);
+    min-width: 160px; z-index: 300;
+  }
+  .nav-account-dropdown.open { display: block; }
+  .nav-account-dropdown a {
+    display: block; padding: 12px 16px;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em;
+    color: var(--text3); cursor: pointer; text-decoration: none;
+    transition: all 0.15s; border-bottom: 1px solid var(--border2);
+  }
+  .nav-account-dropdown a:last-child { border-bottom: none; }
+  .nav-account-dropdown a:hover { color: var(--text); background: var(--surface2); }
+  .nav-account-dropdown a.danger { color: #ef4444; }
+  .nav-account-dropdown a.danger:hover { background: rgba(239,68,68,0.08); }
+
   /* ═══ LEADERBOARD PAGE ═══ */
   #leaderboard { padding: 80px 0 80px; }
   .lb-header {
@@ -1132,14 +1180,49 @@
 
   /* Phone: 480px and below */
   @media (max-width: 480px) {
-    nav { padding: 10px 12px; gap: 6px; }
-    .nav-links { gap: 10px; }
-    .nav-links a { font-size: 8.5px; letter-spacing: 0.06em; }
-    .nav-logo { width: 22px; height: 30px; }
+    /* Nav: logo left, theme toggle right, links hidden behind hamburger */
+    nav {
+      padding: 10px 14px; gap: 0;
+      flex-wrap: nowrap;
+    }
+    .nav-logo { width: 22px; height: 30px; flex-shrink: 0; }
     .nav-logo:hover { width: 54px; }
     .logo-svg-wrap { width: 20px; height: 26px; }
     .logo-img { width: 20px; height: 26px; }
-    .theme-toggle { width: 28px; height: 28px; font-size: 14px; }
+
+    /* Hide nav links on phone - show below nav */
+    .nav-links {
+      display: none;
+      position: fixed; top: 52px; left: 0; right: 0;
+      background: var(--nav-bg, rgba(10,10,10,0.98));
+      flex-direction: column; gap: 0;
+      border-bottom: 1px solid var(--border);
+      z-index: 99; padding: 8px 0;
+    }
+    .nav-links.mobile-open { display: flex; }
+    .nav-links a {
+      font-size: 12px; letter-spacing: 0.1em;
+      padding: 14px 20px; border-bottom: 1px solid var(--border2);
+      white-space: nowrap;
+    }
+    .nav-links a:last-child { border-bottom: none; }
+
+    /* Hamburger button */
+    .nav-hamburger {
+      display: flex; flex-direction: column; justify-content: center;
+      gap: 4px; background: transparent; border: none;
+      cursor: pointer; padding: 4px; margin-left: 8px; flex-shrink: 0;
+    }
+    .nav-hamburger span {
+      display: block; width: 18px; height: 2px;
+      background: var(--text); border-radius: 2px;
+      transition: all 0.2s;
+    }
+
+    #nav-user-area { gap: 6px; }
+    .nav-signin-btn { font-size: 10px; padding: 6px 10px; }
+    .nav-account-btn { font-size: 10px; padding: 5px 8px; }
+    .theme-toggle { width: 28px; height: 28px; font-size: 13px; flex-shrink: 0; }
 
     #home { padding: 80px 16px 72px; }
     .home-title { font-size: clamp(36px, 14vw, 56px); line-height: 1.0; }
@@ -1153,6 +1236,16 @@
 
     .bank-header { padding: 18px 14px 12px; flex-direction: column; align-items: flex-start; }
     .bank-title { font-size: 22px; }
+
+    /* Login page mobile */
+    .login-box { padding: 0 4px; }
+    .login-title { font-size: 26px; }
+  }
+
+  /* Show hamburger only on phone */
+  .nav-hamburger { display: none; }
+  @media (max-width: 480px) {
+    .nav-hamburger { display: flex; }
   }
 </style>
 </head>
@@ -1166,14 +1259,18 @@
     </span>
     <span class="logo-word">defxny</span>
   </a>
-  <div class="nav-links">
-    <a onclick="showPage('home')" id="nav-home" class="active">Home</a>
-    <a onclick="showPage('bank')" id="nav-bank">Question Bank</a>
-    <a onclick="showPage('formulas')" id="nav-formulas">Formulas</a>
-    <a onclick="showPage('analytics')" id="nav-analytics">Analytics</a>
-    <a onclick="showPage('leaderboard')" id="nav-leaderboard">Leaderboard</a>
+  <button class="nav-hamburger" id="nav-hamburger" onclick="toggleMobileNav()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav-links" id="nav-links">
+    <a onclick="showPage('home'); closeMobileNav()" id="nav-home" class="active">Home</a>
+    <a onclick="showPage('bank'); closeMobileNav()" id="nav-bank">Question Bank</a>
+    <a onclick="showPage('formulas'); closeMobileNav()" id="nav-formulas">Formulas</a>
+    <a onclick="showPage('analytics'); closeMobileNav()" id="nav-analytics">Analytics</a>
+    <a onclick="showPage('leaderboard'); closeMobileNav()" id="nav-leaderboard">Leaderboard</a>
   </div>
-  <div id="nav-user-area" style="margin-left:auto; display:flex; align-items:center; gap:14px;">
+  <div id="nav-user-area" style="margin-left:auto; display:flex; align-items:center; gap:10px; flex-shrink:0;">
+    <div id="nav-auth-area"></div>
     <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">◐</button>
   </div>
 </nav>
@@ -2442,19 +2539,58 @@ async function logout() {
 }
 
 function renderUserArea() {
-  const area = document.getElementById('nav-user-area');
-  const themeBtn = document.getElementById('theme-toggle');
+  const authArea = document.getElementById('nav-auth-area');
+  if (!authArea) return;
   if (currentUser) {
-    area.innerHTML = `
-      <span class="user-badge">Signed in as <span class="user-name">${escInline(currentUser.username)}</span></span>
-      <button class="logout-btn" onclick="logout()">Log out</button>
-    `;
-    area.appendChild(themeBtn);
+    authArea.innerHTML = `
+      <div class="nav-account-wrap" id="nav-account-wrap">
+        <button class="nav-account-btn" onclick="toggleAccountDropdown()">
+          ${escInline(currentUser.username)} <span class="chevron">▼</span>
+        </button>
+        <div class="nav-account-dropdown" id="nav-account-dropdown">
+          <a onclick="showPage('analytics'); closeAccountDropdown()">Analytics</a>
+          <a onclick="showPage('leaderboard'); closeAccountDropdown()">Leaderboard</a>
+          <a class="danger" onclick="logout(); closeAccountDropdown()">Log out</a>
+        </div>
+      </div>`;
   } else {
-    area.innerHTML = `<a onclick="showPage('login')" style="font-family:var(--mono);font-size:11px;letter-spacing:0.08em;color:var(--text3);cursor:pointer;text-decoration:underline;">Sign in</a>`;
-    area.appendChild(themeBtn);
+    authArea.innerHTML = `
+      <button class="nav-signin-btn" onclick="showPage('login')">Sign In</button>`;
   }
 }
+
+function toggleMobileNav() {
+  const links = document.getElementById('nav-links');
+  const btn = document.getElementById('nav-hamburger');
+  if (!links) return;
+  links.classList.toggle('mobile-open');
+  const open = links.classList.contains('mobile-open');
+  if (btn) btn.setAttribute('aria-expanded', open);
+}
+function closeMobileNav() {
+  const links = document.getElementById('nav-links');
+  if (links) links.classList.remove('mobile-open');
+}
+
+function toggleAccountDropdown() {
+  const d = document.getElementById('nav-account-dropdown');
+  if (d) d.classList.toggle('open');
+}
+function closeAccountDropdown() {
+  const d = document.getElementById('nav-account-dropdown');
+  if (d) d.classList.remove('open');
+}
+// Close dropdowns when clicking outside
+document.addEventListener('click', (e) => {
+  const wrap = document.getElementById('nav-account-wrap');
+  if (wrap && !wrap.contains(e.target)) closeAccountDropdown();
+
+  const links = document.getElementById('nav-links');
+  const hamburger = document.getElementById('nav-hamburger');
+  if (links && hamburger && !links.contains(e.target) && !hamburger.contains(e.target)) {
+    closeMobileNav();
+  }
+});
 
 async function tryRestoreSession() {
   try {
@@ -2751,19 +2887,24 @@ function closeFormulaModal(e) {
 window.addEventListener('DOMContentLoaded', async () => {
   loadTheme();
   loadState();
-  document.getElementById('home').style.display = 'flex';
-  document.getElementById('bank').style.display = 'none';
-  document.getElementById('qpage').style.display = 'none';
-  document.getElementById('formulas').style.display = 'none';
-  document.getElementById('analytics').style.display = 'none';
-  document.getElementById('login').style.display = 'none';
-  document.getElementById('leaderboard').style.display = 'none';
-  document.getElementById('home').classList.add('active');
-  document.getElementById('nav-home').classList.add('active');
+
+  // Hide all pages first
+  ['home','bank','qpage','formulas','analytics','login','leaderboard'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.style.display = 'none'; el.classList.remove('active'); }
+  });
+
+  // Start on Home
+  const home = document.getElementById('home');
+  if (home) { home.style.display = 'flex'; home.classList.add('active'); }
+  const navHome = document.getElementById('nav-home');
+  if (navHome) navHome.classList.add('active');
+
   updateScorePanel();
+  renderUserArea(); // show Sign In button immediately
 
   initSupabase();
-  await tryRestoreSession();
+  await tryRestoreSession(); // updates nav if session found
 });
 </script>
 </body>
