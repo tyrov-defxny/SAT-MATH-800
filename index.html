@@ -2653,7 +2653,7 @@ async function loadLeaderboard() {
       .select('username, total_answered, total_correct, accuracy')
       .order('accuracy', { ascending: false })
       .order('total_answered', { ascending: false })
-      .limit(50);
+      .limit(5000000000000);
 
     if (error) throw error;
     if (!data || data.length === 0) {
